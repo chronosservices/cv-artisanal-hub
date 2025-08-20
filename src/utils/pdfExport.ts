@@ -8,17 +8,21 @@ export const exportToPDF = async (elementId: string, filename: string) => {
       throw new Error('Element not found');
     }
 
-    // Create canvas from HTML element
+    // Create canvas from HTML element with better settings for CV content
     const canvas = await html2canvas(element, {
-      scale: 2,
+      scale: 3, // Higher scale for better quality
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
-      logging: false
+      logging: false,
+      width: element.scrollWidth,
+      height: element.scrollHeight,
+      scrollX: 0,
+      scrollY: 0
     });
 
     // Calculate dimensions
-    const imgData = canvas.toDataURL('image/png');
+    const imgData = canvas.toDataURL('image/png', 1.0); // Max quality
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
@@ -27,16 +31,23 @@ export const exportToPDF = async (elementId: string, filename: string) => {
 
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
-    const canvasAspectRatio = canvas.height / canvas.width;
-    const pdfAspectRatio = pdfHeight / pdfWidth;
-
-    let imgWidth, imgHeight;
-    if (canvasAspectRatio > pdfAspectRatio) {
-      imgHeight = pdfHeight;
-      imgWidth = imgHeight / canvasAspectRatio;
-    } else {
-      imgWidth = pdfWidth;
-      imgHeight = imgWidth * canvasAspectRatio;
+    
+    // Calculate canvas dimensions in mm
+    const canvasWidth = canvas.width;
+    const canvasHeight = canvas.height;
+    
+    // Scale to fit A4 width with margins
+    const margin = 10; // 10mm margin
+    const availableWidth = pdfWidth - (2 * margin);
+    const availableHeight = pdfHeight - (2 * margin);
+    
+    let imgWidth = availableWidth;
+    let imgHeight = (canvasHeight * availableWidth) / canvasWidth;
+    
+    // If height exceeds available space, scale down
+    if (imgHeight > availableHeight) {
+      imgHeight = availableHeight;
+      imgWidth = (canvasWidth * availableHeight) / canvasHeight;
     }
 
     const x = (pdfWidth - imgWidth) / 2;
