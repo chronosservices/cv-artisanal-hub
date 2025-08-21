@@ -3,10 +3,33 @@ import jsPDF from 'jspdf';
 
 export const exportToPDF = async (elementId: string, filename: string) => {
   try {
-    const element = document.getElementById(elementId);
+    // Essayer plusieurs sélecteurs pour trouver l'élément CV
+    let element = document.getElementById(elementId);
+    
     if (!element) {
-      throw new Error('Element not found');
+      // Essayer avec le sélecteur de classe CV
+      element = document.querySelector('.cv-template') as HTMLElement;
     }
+    
+    if (!element) {
+      // Essayer avec le container du CV
+      element = document.querySelector('[data-cv-template]') as HTMLElement;
+    }
+    
+    if (!element) {
+      // Essayer avec le conteneur de prévisualisation
+      element = document.getElementById('cv-preview-container');
+      if (element) {
+        element = element.querySelector('div') as HTMLElement;
+      }
+    }
+    
+    if (!element) {
+      console.error('Aucun élément CV trouvé pour l\'export PDF');
+      throw new Error('Élément CV non trouvé. Vérifiez que le CV est bien affiché.');
+    }
+
+    console.log('Élément trouvé pour export PDF:', element);
 
     // Store original classes and styles
     const originalClasses = element.className;
@@ -16,43 +39,82 @@ export const exportToPDF = async (elementId: string, filename: string) => {
     element.className = `${originalClasses} cv-print-container cv-a4-format`;
     element.style.cssText = `
       ${originalStyle}
-      width: 210mm !important;
-      min-height: 297mm !important;
+      width: 794px !important;
+      min-height: 1123px !important;
       max-width: none !important;
       margin: 0 !important;
-      padding: 20mm !important;
+      padding: 40px !important;
       box-sizing: border-box !important;
       background: white !important;
       color: black !important;
       font-size: 14px !important;
       line-height: 1.4 !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      transform: scale(1) !important;
+      position: relative !important;
     `;
 
-    // Wait for styles to apply
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // Assurer que tous les éléments enfants sont visibles
+    const childElements = element.querySelectorAll('*');
+    childElements.forEach((child: Element) => {
+      const htmlChild = child as HTMLElement;
+      if (htmlChild.style) {
+        htmlChild.style.visibility = 'visible';
+        htmlChild.style.opacity = '1';
+      }
+    });
+
+    // Wait for styles to apply and images to load
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    console.log('Début de la capture avec html2canvas...');
 
     // Create canvas with optimized settings
     const canvas = await html2canvas(element, {
-      scale: 3,
+      scale: 2,
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
-      logging: false,
-      width: element.scrollWidth,
-      height: element.scrollHeight,
+      logging: true,
+      width: 794,
+      height: 1123,
       scrollX: 0,
       scrollY: 0,
-      foreignObjectRendering: true,
-      imageTimeout: 5000,
+      foreignObjectRendering: false,
+      imageTimeout: 10000,
       removeContainer: false,
+      ignoreElements: (element) => {
+        const htmlElement = element as HTMLElement;
+        return element.classList.contains('no-print') || 
+               htmlElement.style.display === 'none' ||
+               htmlElement.style.visibility === 'hidden';
+      },
       onclone: (clonedDoc) => {
-        // Ensure all styles are applied in the cloned document
-        const clonedElement = clonedDoc.getElementById(elementId);
+        console.log('Clone du document créé');
+        // Assurer que tous les styles sont appliqués dans le document cloné
+        const clonedElement = clonedDoc.querySelector('.cv-template') as HTMLElement;
         if (clonedElement) {
           clonedElement.style.cssText = element.style.cssText;
+          clonedElement.style.transform = 'none';
+          clonedElement.style.width = '794px';
+          clonedElement.style.minHeight = '1123px';
         }
+
+        // Appliquer les styles aux éléments enfants
+        const allElements = clonedDoc.querySelectorAll('*');
+        allElements.forEach((el: Element) => {
+          const htmlEl = el as HTMLElement;
+          if (htmlEl.style) {
+            htmlEl.style.visibility = 'visible';
+            htmlEl.style.opacity = '1';
+          }
+        });
       }
     });
+
+    console.log('Canvas créé:', canvas.width, 'x', canvas.height);
 
     // Restore original styles
     element.className = originalClasses;

@@ -40,6 +40,7 @@ export const CVWizard: React.FC<CVWizardProps> = ({
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [showPreview, setShowPreview] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const { toast } = useToast();
 
   const progress = (currentStep / steps.length) * 100;
@@ -57,19 +58,27 @@ export const CVWizard: React.FC<CVWizardProps> = ({
   };
 
   const handleExportPDF = async () => {
+    setIsExporting(true);
     try {
-      const fileName = `CV_${data.personalInfo.firstName || 'MonCV'}_${data.personalInfo.lastName || 'Professionnel'}.pdf`;
-      await exportToPDF('cv-preview-container', fileName);
+      const filename = `CV_${data.personalInfo.firstName || 'Mon'}_${data.personalInfo.lastName || 'CV'}`.replace(/[^a-z0-9]/gi, '_') + '.pdf';
+      
+      // Attendre un peu pour s'assurer que le rendu est complet
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      await exportToPDF('cv-template', filename);
       toast({
-        title: "✅ CV exporté avec succès !",
-        description: "Votre CV a été téléchargé en PDF.",
+        title: "CV exporté avec succès !",
+        description: "Votre CV a été téléchargé au format PDF.",
       });
     } catch (error) {
+      console.error('Erreur lors de l\'export PDF:', error);
       toast({
-        title: "❌ Erreur lors de l'export",
-        description: "Une erreur s'est produite lors de l'export du PDF.",
+        title: "Erreur d'exportation",
+        description: error instanceof Error ? error.message : "Une erreur s'est produite lors de l'export. Veuillez réessayer.",
         variant: "destructive",
       });
+    } finally {
+      setIsExporting(false);
     }
   };
 

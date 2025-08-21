@@ -42,7 +42,8 @@ export const CVTemplate2: React.FC<CVTemplate2Props> = ({ data, customization })
   
   return (
     <div 
-      className="cv-template-2 flex max-w-4xl bg-white shadow-2xl font-sans text-sm leading-relaxed overflow-hidden"
+      className="cv-template cv-template-2 flex max-w-4xl bg-white shadow-2xl font-sans text-sm leading-relaxed overflow-hidden"
+      data-cv-template="2"
       style={{
         minHeight: 'fit-content',
         height: 'auto'

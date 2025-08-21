@@ -60,7 +60,8 @@ export const CVTemplate1: React.FC<CVTemplate1Props> = ({ data, customization })
 
   return (
     <div 
-      className="cv-template-1 flex max-w-4xl bg-white shadow-2xl font-sans leading-relaxed print:shadow-none print:max-w-none overflow-hidden"
+      className="cv-template cv-template-1 flex max-w-4xl bg-white shadow-2xl font-sans leading-relaxed print:shadow-none print:max-w-none overflow-hidden"
+      data-cv-template="1"
       style={{ 
         ...customStyles,
         fontSize: config.textSize,
