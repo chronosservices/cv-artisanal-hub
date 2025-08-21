@@ -40,56 +40,180 @@ export const CVTemplate2: React.FC<CVTemplate2Props> = ({ data, customization })
   
   const config = { ...defaultCustomization, ...customization };
   
+  // Styles CSS intégrés pour éviter les problèmes de Tailwind dans html2canvas
+  const containerStyle: React.CSSProperties = {
+    display: 'flex',
+    maxWidth: '210mm', // Largeur A4
+    minHeight: '297mm', // Hauteur A4
+    backgroundColor: 'white',
+    fontFamily: 'Arial, sans-serif',
+    fontSize: config.textSize,
+    lineHeight: '1.5',
+    color: '#000000',
+    overflow: 'hidden',
+    boxSizing: 'border-box'
+  };
+
+  const sidebarStyle: React.CSSProperties = {
+    width: '33.333333%',
+    backgroundColor: config.leftColumnBgColor,
+    color: config.leftColumnTextColor,
+    padding: '24px',
+    boxSizing: 'border-box'
+  };
+
+  const mainContentStyle: React.CSSProperties = {
+    width: '66.666667%',
+    padding: '32px',
+    boxSizing: 'border-box'
+  };
+
+  const blockStyle: React.CSSProperties = {
+    marginBottom: '24px'
+  };
+
+  const sidebarTitleStyle: React.CSSProperties = {
+    color: config.leftColumnTitleColor,
+    fontWeight: 'bold',
+    fontSize: '16px',
+    marginBottom: '12px',
+    borderBottom: `1px solid ${config.leftColumnTitleColor}`,
+    paddingBottom: '4px'
+  };
+
+  const mainSectionTitleStyle: React.CSSProperties = {
+    fontSize: '18px',
+    fontWeight: 'bold',
+    color: config.sectionTitleColor,
+    borderBottom: `2px solid ${config.sectionTitleColor}`,
+    paddingBottom: '4px',
+    marginBottom: '12px'
+  };
+
+  const photoStyle: React.CSSProperties = {
+    width: '128px',
+    height: '128px',
+    borderRadius: config.photoRounded ? '50%' : '8px',
+    margin: '0 auto',
+    objectFit: 'cover',
+    border: '4px solid white',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+  };
+
+  const photoPlaceholderStyle: React.CSSProperties = {
+    width: '128px',
+    height: '128px',
+    borderRadius: config.photoRounded ? '50%' : '8px',
+    backgroundColor: 'white',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: '0 auto',
+    color: '#6b7280',
+    fontSize: '12px',
+    border: '4px solid white',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+  };
+
   return (
     <div 
-      className="cv-template cv-template-2 flex max-w-4xl bg-white shadow-2xl font-sans text-sm leading-relaxed overflow-hidden"
+      className="cv-template cv-template-2"
       data-cv-template="2"
-      style={{
-        minHeight: 'fit-content',
-        height: 'auto'
-      }}
+      style={containerStyle}
     >
       {/* Sidebar */}
-      <aside className="w-1/3 bg-slate-800 text-white p-6">
+      <aside style={sidebarStyle}>
         {/* Photo */}
-        <div className="photo mb-6">
+        <div style={blockStyle}>
           {personalInfo.photo ? (
             <img 
               src={personalInfo.photo} 
               alt="Photo profil" 
-              className="w-32 h-32 rounded-full mx-auto object-cover border-4 border-white shadow-lg"
+              style={photoStyle}
             />
           ) : (
-            <div className="w-32 h-32 rounded-full bg-white flex items-center justify-center mx-auto text-gray-600 text-xs border-4 border-white shadow-lg">
+            <div style={photoPlaceholderStyle}>
               Photo
             </div>
           )}
         </div>
 
         {/* Contact Information */}
-        <div className="block mb-6">
-          <h2 className="text-white font-bold text-base mb-3 border-b border-white pb-1">
+        <div style={blockStyle}>
+          <h2 style={sidebarTitleStyle}>
             Contact
           </h2>
-          <div className="space-y-2 text-xs">
-            {personalInfo.phone && <div className="flex items-center gap-2">📞 {personalInfo.phone}</div>}
-            {personalInfo.email && <div className="flex items-center gap-2">✉️ {personalInfo.email}</div>}
-            {personalInfo.address && <div className="flex items-center gap-2">📍 {personalInfo.address}</div>}
-            {personalInfo.age && <div className="flex items-center gap-2">🎂 {personalInfo.age} ans</div>}
-            {personalInfo.license && <div className="flex items-center gap-2">🚗 {personalInfo.license}</div>}
+          <div style={{ fontSize: '12px' }}>
+            {personalInfo.phone && (
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px', 
+                marginBottom: '8px',
+                color: config.leftColumnTextColor 
+              }}>
+                {!config.hideInfoIcons && <span>📞</span>} {personalInfo.phone}
+              </div>
+            )}
+            {personalInfo.email && (
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px', 
+                marginBottom: '8px',
+                color: config.leftColumnTextColor 
+              }}>
+                {!config.hideInfoIcons && <span>✉️</span>} {personalInfo.email}
+              </div>
+            )}
+            {personalInfo.address && (
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px', 
+                marginBottom: '8px',
+                color: config.leftColumnTextColor 
+              }}>
+                {!config.hideInfoIcons && <span>📍</span>} {personalInfo.address}
+              </div>
+            )}
+            {personalInfo.age && (
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px', 
+                marginBottom: '8px',
+                color: config.leftColumnTextColor 
+              }}>
+                {!config.hideInfoIcons && <span>🎂</span>} {personalInfo.age} ans
+              </div>
+            )}
+            {personalInfo.license && (
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '8px', 
+                marginBottom: '8px',
+                color: config.leftColumnTextColor 
+              }}>
+                {!config.hideInfoIcons && <span>🚗</span>} {config.reduceLicenseDisplay ? 'Permis B' : personalInfo.license}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Education in Sidebar */}
-        {formations.length > 0 && (
-          <div className="block mb-6">
-            <h2 className="text-white font-bold text-base mb-3 border-b border-white pb-1">
+        {formations && formations.length > 0 && (
+          <div style={blockStyle}>
+            <h2 style={sidebarTitleStyle}>
               Education
             </h2>
-            <div className="space-y-2 text-xs">
+            <div style={{ fontSize: '12px' }}>
               {formations.map(formation => formation.title && (
-                <div key={formation.id}>
-                  {formation.period && <div className="font-semibold">{formation.period}</div>}
+                <div key={formation.id} style={{ marginBottom: '8px', color: config.leftColumnTextColor }}>
+                  {formation.period && (
+                    <div style={{ fontWeight: '600' }}>{formation.period}</div>
+                  )}
                   <div>{formation.title}</div>
                 </div>
               ))}
@@ -98,28 +222,54 @@ export const CVTemplate2: React.FC<CVTemplate2Props> = ({ data, customization })
         )}
 
         {/* Skills */}
-        {(skills.softSkills.length > 0 || skills.hardSkills.length > 0) && (
-          <div className="block mb-6">
-            <h2 className="text-white font-bold text-base mb-3 border-b border-white pb-1">
+        {skills && (skills.softSkills?.length > 0 || skills.hardSkills?.length > 0) && (
+          <div style={blockStyle}>
+            <h2 style={sidebarTitleStyle}>
               Skills
             </h2>
-            <ul className="list-disc list-inside text-xs space-y-1">
-              {[...skills.softSkills, ...skills.hardSkills].map((skill, index) => (
-                <li key={index}>{skill}</li>
+            <ul style={{ 
+              listStyleType: 'disc', 
+              paddingLeft: '20px', 
+              fontSize: '12px',
+              color: config.leftColumnTextColor
+            }}>
+              {skills.softSkills && skills.softSkills.map((skill, index) => (
+                <li key={`soft-${index}`} style={{ marginBottom: '4px' }}>{skill}</li>
+              ))}
+              {skills.hardSkills && skills.hardSkills.map((skill, index) => (
+                <li key={`hard-${index}`} style={{ marginBottom: '4px' }}>{skill}</li>
               ))}
             </ul>
           </div>
         )}
 
+        {/* Languages */}
+        {languages && languages.length > 0 && (
+          <div style={blockStyle}>
+            <h2 style={sidebarTitleStyle}>
+              Langues
+            </h2>
+            <div style={{ fontSize: '12px' }}>
+              {languages.map(language => language.name && (
+                <div key={language.id} style={{ marginBottom: '4px', color: config.leftColumnTextColor }}>
+                  {language.name} : {language.level}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Certifications */}
-        {certifications.length > 0 && (
-          <div className="block">
-            <h2 className="text-white font-bold text-base mb-3 border-b border-white pb-1">
+        {certifications && certifications.length > 0 && (
+          <div>
+            <h2 style={sidebarTitleStyle}>
               Certification
             </h2>
-            <div className="space-y-1 text-xs">
+            <div style={{ fontSize: '12px' }}>
               {certifications.map(cert => cert.name && (
-                <div key={cert.id}>{cert.name}</div>
+                <div key={cert.id} style={{ marginBottom: '4px', color: config.leftColumnTextColor }}>
+                  {cert.name}
+                </div>
               ))}
             </div>
           </div>
@@ -127,48 +277,93 @@ export const CVTemplate2: React.FC<CVTemplate2Props> = ({ data, customization })
       </aside>
 
       {/* Main Content */}
-      <main className="w-2/3 p-8">
+      <main style={mainContentStyle}>
         {/* Header */}
-        <header className="mb-6">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">
+        <header style={blockStyle}>
+          <h1 
+            style={{ 
+              fontSize: config.nameSize,
+              fontWeight: 'bold',
+              color: '#374151',
+              marginBottom: '8px',
+              textTransform: config.nameUppercase ? 'uppercase' : 'none'
+            }}
+          >
             {personalInfo.firstName || 'Votre'}{' '}
-            <span className="text-slate-800">{personalInfo.lastName || 'Nom'}</span>
+            <span style={{ color: config.nameColor }}>{personalInfo.lastName || 'Nom'}</span>
           </h1>
           {personalInfo.jobTitle && (
-            <h2 className="text-xl text-gray-600 font-normal">{personalInfo.jobTitle}</h2>
+            <h2 
+              style={{ 
+                fontSize: '20px',
+                color: config.jobTitleColor,
+                fontWeight: 'normal'
+              }}
+            >
+              {personalInfo.jobTitle}
+            </h2>
           )}
         </header>
 
         {/* Profile */}
         {personalInfo.profile && (
-          <section className="mb-6">
-            <h2 className="text-lg font-bold text-slate-800 border-b-2 border-slate-800 pb-1 mb-3">
+          <section style={blockStyle}>
+            <h2 style={mainSectionTitleStyle}>
               Profile
             </h2>
-            <p className="text-justify">{personalInfo.profile}</p>
+            <p style={{ textAlign: config.alignProfileJustify ? 'justify' : 'left' }}>
+              {personalInfo.profile}
+            </p>
           </section>
         )}
 
         {/* Professional Experience */}
-        {experiences.length > 0 && (
-          <section className="mb-6">
-            <h2 className="text-lg font-bold text-slate-800 border-b-2 border-slate-800 pb-1 mb-3">
+        {experiences && experiences.length > 0 && (
+          <section style={blockStyle}>
+            <h2 style={mainSectionTitleStyle}>
               Work Experience
             </h2>
             {experiences.map(exp => exp.title && (
-              <article key={exp.id} className="mb-4">
-                <h3 className="font-bold text-gray-800 mb-1">
-                  {exp.title}
-                  {exp.period && <span className="float-right font-normal text-gray-600">{exp.period}</span>}
-                </h3>
-                {exp.company && <p className="text-gray-700 font-medium mb-1">{exp.company}</p>}
+              <article key={exp.id} style={{ marginBottom: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <h3 style={{ 
+                    fontWeight: 'bold', 
+                    color: config.companyColor,
+                    marginBottom: '4px',
+                    flex: 1
+                  }}>
+                    {exp.title}
+                  </h3>
+                  {exp.period && (
+                    <span style={{ 
+                      fontWeight: 'normal', 
+                      color: '#6b7280',
+                      marginLeft: '10px'
+                    }}>
+                      {exp.period}
+                    </span>
+                  )}
+                </div>
+                {exp.company && (
+                  <p style={{ 
+                    color: '#374151',
+                    fontWeight: '500',
+                    marginBottom: '4px'
+                  }}>
+                    {exp.company}
+                  </p>
+                )}
                 {exp.description && (
-                  <div className="text-justify">
+                  <div style={{ textAlign: 'justify' }}>
                     {exp.description.split('\n').map((line, index) => {
                       const trimmedLine = line.trim();
                       if (!trimmedLine) return null;
                       const formattedLine = trimmedLine.startsWith('•') ? trimmedLine : `• ${trimmedLine}`;
-                      return <p key={index} className="mb-1">{formattedLine}</p>;
+                      return (
+                        <p key={index} style={{ marginBottom: '4px' }}>
+                          {formattedLine}
+                        </p>
+                      );
                     })}
                   </div>
                 )}
@@ -177,14 +372,30 @@ export const CVTemplate2: React.FC<CVTemplate2Props> = ({ data, customization })
           </section>
         )}
 
+        {/* Interests */}
+        {interests && interests.length > 0 && (
+          <section style={blockStyle}>
+            <h2 style={mainSectionTitleStyle}>
+              Centres d'intérêt
+            </h2>
+            <div>
+              {interests.map((interest, index) => (
+                <span key={index}>
+                  {interest}{index < interests.length - 1 ? ', ' : ''}
+                </span>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* References */}
-        {references.length > 0 && (
+        {references && references.length > 0 && (
           <section>
-            <h2 className="text-lg font-bold text-slate-800 border-b-2 border-slate-800 pb-1 mb-3">
+            <h2 style={mainSectionTitleStyle}>
               References
             </h2>
             {references.map(ref => ref.name && (
-              <p key={ref.id} className="mb-1">
+              <p key={ref.id} style={{ marginBottom: '4px' }}>
                 {ref.name}{ref.title && ` - ${ref.title}`}
               </p>
             ))}
