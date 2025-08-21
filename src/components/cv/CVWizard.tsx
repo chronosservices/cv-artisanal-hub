@@ -8,31 +8,35 @@ import { FormationsStep } from './wizard/FormationsStep';
 import { ExperiencesStep } from './wizard/ExperiencesStep';
 import { SkillsStep } from './wizard/SkillsStep';
 import { FinalStep } from './wizard/FinalStep';
-import { CVData } from '@/types/cv';
+import { CVData, CVCustomization } from '@/types/cv';
 import { exportToPDF } from '@/utils/pdfExport';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, ArrowRight, Eye, Download, ChevronLeft } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Eye, Download, ChevronLeft, Palette } from 'lucide-react';
 
 interface CVWizardProps {
   data: CVData;
   onDataChange: (data: CVData) => void;
   selectedTemplate: 1 | 2;
+  customization?: CVCustomization;
   onBackToTemplates: () => void;
+  onOpenCustomizer: () => void;
 }
 
 const steps = [
-  { id: 1, title: 'Informations personnelles', icon: '👤' },
-  { id: 2, title: 'Formations', icon: '🎓' },
-  { id: 3, title: 'Expériences', icon: '💼' },
-  { id: 4, title: 'Compétences & Plus', icon: '⚡' },
-  { id: 5, title: 'Finalisation', icon: '✨' }
+  { id: 1, title: 'Informations personnelles' },
+  { id: 2, title: 'Formations' },
+  { id: 3, title: 'Expériences' },
+  { id: 4, title: 'Compétences & Plus' },
+  { id: 5, title: 'Finalisation' }
 ];
 
 export const CVWizard: React.FC<CVWizardProps> = ({
   data,
   onDataChange,
   selectedTemplate,
-  onBackToTemplates
+  customization,
+  onBackToTemplates,
+  onOpenCustomizer
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [showPreview, setShowPreview] = useState(false);
@@ -110,7 +114,7 @@ export const CVWizard: React.FC<CVWizardProps> = ({
             </div>
           </CardHeader>
         </Card>
-        <CVPreview data={data} selectedTemplate={selectedTemplate} />
+        <CVPreview data={data} selectedTemplate={selectedTemplate} customization={customization} />
       </div>
     );
   }
@@ -129,20 +133,30 @@ export const CVWizard: React.FC<CVWizardProps> = ({
               <ChevronLeft className="w-4 h-4" />
               Changer de modèle
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => setShowPreview(true)}
-              className="flex items-center gap-2 border-primary/50 text-primary hover:bg-primary/5 md:hidden"
-            >
-              <Eye className="w-4 h-4" />
-              Aperçu
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={onOpenCustomizer}
+                className="flex items-center gap-2 border-secondary/50 text-secondary hover:bg-secondary/5"
+              >
+                <Palette className="w-4 h-4" />
+                Personnaliser
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setShowPreview(true)}
+                className="flex items-center gap-2 border-primary/50 text-primary hover:bg-primary/5 md:hidden"
+              >
+                <Eye className="w-4 h-4" />
+                Aperçu
+              </Button>
+            </div>
           </div>
           
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <CardTitle className="text-2xl font-bold text-primary">
-                {steps[currentStep - 1].icon} {steps[currentStep - 1].title}
+                {steps[currentStep - 1].title}
               </CardTitle>
               <span className="text-sm text-muted-foreground">
                 Étape {currentStep} sur {steps.length}
@@ -234,7 +248,7 @@ export const CVWizard: React.FC<CVWizardProps> = ({
         {/* Preview Section - Desktop only */}
         <div className="hidden md:block">
           <div className="sticky top-6">
-            <CVPreview data={data} selectedTemplate={selectedTemplate} />
+            <CVPreview data={data} selectedTemplate={selectedTemplate} customization={customization} />
           </div>
         </div>
       </div>

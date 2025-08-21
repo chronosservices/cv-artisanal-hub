@@ -1,12 +1,44 @@
 import React from 'react';
-import { CVData } from '@/types/cv';
+import { CVData, CVCustomization } from '@/types/cv';
 
 interface CVTemplate2Props {
   data: CVData;
+  customization?: CVCustomization;
 }
 
-export const CVTemplate2: React.FC<CVTemplate2Props> = ({ data }) => {
+export const CVTemplate2: React.FC<CVTemplate2Props> = ({ data, customization }) => {
   const { personalInfo, formations, experiences, languages, certifications, skills, interests, references } = data;
+  
+  const defaultCustomization: CVCustomization = {
+    nameColor: '#0a2342',
+    jobTitleColor: '#666666',
+    sectionTitleColor: '#0a2342',
+    companyColor: '#333333',
+    levelBarColor: '#0a2342',
+    leftColumnBgColor: '#0a2342',
+    leftColumnTitleColor: '#ffffff',
+    leftColumnLabelColor: '#ffffff',
+    leftColumnTextColor: '#ffffff',
+    photoRounded: true,
+    showTimeline: false,
+    lineBreakAfterLabels: true,
+    nameUppercase: false,
+    alignProfileJustify: true,
+    hideInfoIcons: false,
+    reduceLicenseDisplay: false,
+    textFont: 'OpenSans',
+    textSize: '14px',
+    nameSize: '32px',
+    titleFont: 'VisbyCF',
+    titleSize: '18px',
+    blockMargins: '20px',
+    contentMargins: '10px',
+    verticalPadding: '20px',
+    horizontalPadding: '20px',
+    dateFormat: 'Par défaut'
+  };
+  
+  const config = { ...defaultCustomization, ...customization };
   
   return (
     <div className="cv-template-2 flex max-w-4xl bg-white shadow-2xl font-sans text-sm leading-relaxed">

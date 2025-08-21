@@ -26,7 +26,7 @@ export const FinalStep: React.FC<FinalStepProps> = ({ data, onExportPDF }) => {
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="text-center mb-6">
-        <h3 className="text-2xl font-bold text-primary mb-2">🎉 Félicitations !</h3>
+        <h3 className="text-2xl font-bold text-primary mb-2">Félicitations !</h3>
         <p className="text-lg text-muted-foreground">
           Votre CV est prêt à être téléchargé
         </p>
@@ -69,7 +69,7 @@ export const FinalStep: React.FC<FinalStepProps> = ({ data, onExportPDF }) => {
       {/* Quick Preview */}
       <Card className="border-secondary bg-secondary/5">
         <CardHeader>
-          <CardTitle className="text-secondary">📋 Aperçu rapide</CardTitle>
+          <CardTitle className="text-secondary">Aperçu rapide</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-center">
@@ -141,7 +141,7 @@ export const FinalStep: React.FC<FinalStepProps> = ({ data, onExportPDF }) => {
       {/* Tips */}
       <Card className="border-muted bg-muted/20">
         <CardHeader>
-          <CardTitle className="text-muted-foreground">💡 Conseils</CardTitle>
+          <CardTitle className="text-muted-foreground">Conseils</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm text-muted-foreground">
           <p>• Relisez attentivement votre CV avant de l'envoyer</p>

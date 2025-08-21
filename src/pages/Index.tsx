@@ -2,19 +2,22 @@ import React, { useState } from 'react';
 import { CVWizard } from '@/components/cv/CVWizard';
 import { TemplateSelector } from '@/components/cv/TemplateSelector';
 import { useCVData } from '@/hooks/useCVData';
+import { useCVCustomization } from '@/hooks/useCVCustomization';
+import { CVCustomizer } from '@/components/cv/CVCustomizer';
 import { FileText, Sparkles } from 'lucide-react';
 
 const Index = () => {
   const { data, setData, selectedTemplate, setSelectedTemplate, loadExampleData } = useCVData();
-  const [showWizard, setShowWizard] = useState(false);
+  const { customization, setCustomization } = useCVCustomization();
+  const [view, setView] = useState<'templates' | 'wizard' | 'customizer'>('templates');
 
   const handleTemplateSelect = (template: number) => {
     setSelectedTemplate(template as 1 | 2);
-    setShowWizard(true);
+    setView('wizard');
   };
 
   const handleBackToTemplates = () => {
-    setShowWizard(false);
+    setView('templates');
   };
 
   return (
@@ -39,17 +42,29 @@ const Index = () => {
 
       {/* Main Content */}
       <div className="container mx-auto px-6 py-8">
-        {!showWizard ? (
+        {view === 'templates' && (
           <TemplateSelector 
             onTemplateSelect={handleTemplateSelect}
             onLoadExample={loadExampleData}
           />
-        ) : (
+        )}
+        
+        {view === 'wizard' && (
           <CVWizard
             data={data}
             onDataChange={setData}
             selectedTemplate={selectedTemplate}
+            customization={customization}
             onBackToTemplates={handleBackToTemplates}
+            onOpenCustomizer={() => setView('customizer')}
+          />
+        )}
+
+        {view === 'customizer' && (
+          <CVCustomizer
+            customization={customization}
+            onCustomizationChange={setCustomization}
+            onClose={() => setView('wizard')}
           />
         )}
       </div>

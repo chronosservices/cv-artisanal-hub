@@ -17,17 +17,17 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 210 40% 9%;
 
-    --primary: 140 85% 20%;
+    --primary: 140 95% 15%;
     --primary-foreground: 0 0% 98%;
-    --primary-glow: 140 85% 25%;
+    --primary-glow: 140 95% 20%;
 
-    --secondary: 20 95% 55%;
+    --secondary: 18 100% 50%;
     --secondary-foreground: 0 0% 98%;
 
     --muted: 210 40% 96%;
     --muted-foreground: 215 16% 47%;
 
-    --accent: 20 95% 55%;
+    --accent: 18 100% 50%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84% 60%;
@@ -35,10 +35,10 @@ All colors MUST be HSL.
 
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 140 85% 20%;
+    --ring: 140 95% 15%;
 
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(20 95% 60%));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(18 100% 55%));
     --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 40% 98%));
     
     --shadow-elegant: 0 10px 30px -10px hsl(var(--primary) / 0.2);
