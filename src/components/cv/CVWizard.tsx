@@ -65,7 +65,7 @@ export const CVWizard: React.FC<CVWizardProps> = ({
       // Attendre un peu pour s'assurer que le rendu est complet
       await new Promise(resolve => setTimeout(resolve, 200));
       
-      await exportToPDF('cv-template', filename);
+      await exportToPDF('cv-preview-container', filename);
       toast({
         title: "CV exporté avec succès !",
         description: "Votre CV a été téléchargé au format PDF.",
