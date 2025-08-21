@@ -40,118 +40,186 @@ export const CVTemplate1: React.FC<CVTemplate1Props> = ({ data, customization })
   
   const config = { ...defaultCustomization, ...customization };
   
-  const customStyles = {
-    '--name-color': config.nameColor,
-    '--job-title-color': config.jobTitleColor,
-    '--section-title-color': config.sectionTitleColor,
-    '--company-color': config.companyColor,
-    '--level-bar-color': config.levelBarColor,
-    '--left-column-bg': config.leftColumnBgColor,
-    '--left-column-title-color': config.leftColumnTitleColor,
-    '--left-column-text-color': config.leftColumnTextColor,
-    '--text-size': config.textSize,
-    '--name-size': config.nameSize,
-    '--title-size': config.titleSize,
-    '--block-margins': config.blockMargins,
-    '--content-margins': config.contentMargins,
-    '--vertical-padding': config.verticalPadding,
-    '--horizontal-padding': config.horizontalPadding,
-  } as React.CSSProperties;
+  // Styles CSS intégrés pour éviter les problèmes de Tailwind dans html2canvas
+  const containerStyle: React.CSSProperties = {
+    display: 'flex',
+    maxWidth: '210mm', // Largeur A4
+    minHeight: '297mm', // Hauteur A4
+    backgroundColor: 'white',
+    fontFamily: config.textFont === 'OpenSans' ? 'Arial, sans-serif' : 'Arial, sans-serif',
+    fontSize: config.textSize,
+    lineHeight: '1.5',
+    color: '#000000',
+    overflow: 'hidden',
+    boxSizing: 'border-box'
+  };
+
+  const sidebarStyle: React.CSSProperties = {
+    width: '33.333333%',
+    backgroundColor: config.leftColumnBgColor,
+    padding: `${config.verticalPadding} ${config.horizontalPadding}`,
+    boxSizing: 'border-box'
+  };
+
+  const mainContentStyle: React.CSSProperties = {
+    width: '66.666667%',
+    padding: `${config.verticalPadding} ${config.horizontalPadding}`,
+    boxSizing: 'border-box'
+  };
+
+  const blockStyle: React.CSSProperties = {
+    marginBottom: config.blockMargins
+  };
+
+  const sectionTitleStyle: React.CSSProperties = {
+    fontSize: config.titleSize,
+    fontWeight: 'bold',
+    borderBottom: `2px solid ${config.sectionTitleColor}`,
+    paddingBottom: '4px',
+    marginBottom: config.contentMargins,
+    color: config.sectionTitleColor
+  };
+
+  const leftColumnTitleStyle: React.CSSProperties = {
+    fontSize: config.titleSize,
+    fontWeight: 'bold',
+    borderBottom: `2px solid ${config.leftColumnTitleColor}`,
+    paddingBottom: '4px',
+    marginBottom: config.contentMargins,
+    color: config.leftColumnTitleColor
+  };
+
+  const photoStyle: React.CSSProperties = {
+    width: '128px',
+    height: '128px',
+    margin: '0 auto',
+    objectFit: 'cover',
+    border: '4px solid white',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    borderRadius: config.photoRounded ? '50%' : '8px'
+  };
+
+  const photoPlaceholderStyle: React.CSSProperties = {
+    width: '128px',
+    height: '128px',
+    backgroundColor: '#e5e7eb',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: '0 auto',
+    color: '#6b7280',
+    fontSize: '12px',
+    border: '4px solid white',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    borderRadius: config.photoRounded ? '50%' : '8px'
+  };
 
   return (
     <div 
-      className="cv-template cv-template-1 flex max-w-4xl bg-white shadow-2xl font-sans leading-relaxed print:shadow-none print:max-w-none overflow-hidden"
+      className="cv-template cv-template-1"
       data-cv-template="1"
-      style={{ 
-        ...customStyles,
-        fontSize: config.textSize,
-        fontFamily: config.textFont === 'OpenSans' ? 'system-ui, -apple-system, sans-serif' : config.textFont,
-        minHeight: 'fit-content',
-        height: 'auto'
-      }}
+      style={containerStyle}
     >
       {/* Sidebar */}
-      <aside 
-        className="w-1/3 p-6 print:w-1/3" 
-        style={{ 
-          backgroundColor: config.leftColumnBgColor,
-          padding: `${config.verticalPadding} ${config.horizontalPadding}`
-        }}
-      >
+      <aside style={sidebarStyle}>
         {/* Photo */}
-        <div className="photo" style={{ marginBottom: config.blockMargins }}>
+        <div style={blockStyle}>
           {personalInfo.photo ? (
             <img 
               src={personalInfo.photo} 
               alt="Photo profil" 
-              className={`w-32 h-32 mx-auto object-cover border-4 border-white shadow-lg ${config.photoRounded ? 'rounded-full' : 'rounded-lg'}`}
+              style={photoStyle}
             />
           ) : (
-            <div className={`w-32 h-32 bg-gray-200 flex items-center justify-center mx-auto text-gray-500 text-xs border-4 border-white shadow-lg ${config.photoRounded ? 'rounded-full' : 'rounded-lg'}`}>
+            <div style={photoPlaceholderStyle}>
               Photo
             </div>
           )}
         </div>
 
         {/* Contact Information */}
-        <div className="block" style={{ marginBottom: config.blockMargins }}>
-          <h2 
-            className="font-bold border-b-2 pb-1"
-            style={{ 
-              color: config.leftColumnTitleColor,
-              fontSize: config.titleSize,
-              marginBottom: config.contentMargins,
-              borderBottomColor: config.leftColumnTitleColor
-            }}
-          >
+        <div style={blockStyle}>
+          <h2 style={leftColumnTitleStyle}>
             Informations
           </h2>
-          <div className="space-y-2">
+          <div>
             {personalInfo.phone && (
-              <div className="flex items-center gap-2" style={{ color: config.leftColumnTextColor }}>
-                {!config.hideInfoIcons && '📞'} {personalInfo.phone}
+              <div 
+                style={{ 
+                  color: config.leftColumnTextColor,
+                  marginBottom: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+              >
+                {!config.hideInfoIcons && <span>📞</span>} {personalInfo.phone}
               </div>
             )}
             {personalInfo.email && (
-              <div className="flex items-center gap-2" style={{ color: config.leftColumnTextColor }}>
-                {!config.hideInfoIcons && '✉️'} {personalInfo.email}
+              <div 
+                style={{ 
+                  color: config.leftColumnTextColor,
+                  marginBottom: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+              >
+                {!config.hideInfoIcons && <span>✉️</span>} {personalInfo.email}
               </div>
             )}
             {personalInfo.address && (
-              <div className="flex items-center gap-2" style={{ color: config.leftColumnTextColor }}>
-                {!config.hideInfoIcons && '📍'} {personalInfo.address}
+              <div 
+                style={{ 
+                  color: config.leftColumnTextColor,
+                  marginBottom: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+              >
+                {!config.hideInfoIcons && <span>📍</span>} {personalInfo.address}
               </div>
             )}
             {personalInfo.age && (
-              <div className="flex items-center gap-2" style={{ color: config.leftColumnTextColor }}>
-                {!config.hideInfoIcons && '🎂'} {personalInfo.age} ans
+              <div 
+                style={{ 
+                  color: config.leftColumnTextColor,
+                  marginBottom: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+              >
+                {!config.hideInfoIcons && <span>🎂</span>} {personalInfo.age} ans
               </div>
             )}
             {personalInfo.license && (
-              <div className="flex items-center gap-2" style={{ color: config.leftColumnTextColor }}>
-                {!config.hideInfoIcons && '🚗'} {config.reduceLicenseDisplay ? 'Permis B' : personalInfo.license}
+              <div 
+                style={{ 
+                  color: config.leftColumnTextColor,
+                  marginBottom: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+              >
+                {!config.hideInfoIcons && <span>🚗</span>} {config.reduceLicenseDisplay ? 'Permis B' : personalInfo.license}
               </div>
             )}
           </div>
         </div>
 
         {/* Languages */}
-        {languages.length > 0 && (
-          <div className="block" style={{ marginBottom: config.blockMargins }}>
-            <h2 
-              className="font-bold border-b-2 pb-1"
-              style={{ 
-                color: config.leftColumnTitleColor,
-                fontSize: config.titleSize,
-                marginBottom: config.contentMargins,
-                borderBottomColor: config.leftColumnTitleColor
-              }}
-            >
+        {languages && languages.length > 0 && (
+          <div style={blockStyle}>
+            <h2 style={leftColumnTitleStyle}>
               Langues
             </h2>
-            <div className="space-y-1">
+            <div>
               {languages.map(language => language.name && (
-                <div key={language.id} style={{ color: config.leftColumnTextColor }}>
+                <div key={language.id} style={{ color: config.leftColumnTextColor, marginBottom: '4px' }}>
                   {language.name} : {language.level}
                 </div>
               ))}
@@ -160,35 +228,35 @@ export const CVTemplate1: React.FC<CVTemplate1Props> = ({ data, customization })
         )}
 
         {/* Skills */}
-        {(skills.softSkills.length > 0 || skills.hardSkills.length > 0) && (
-          <div className="block" style={{ marginBottom: config.blockMargins }}>
-            <h2 
-              className="font-bold border-b-2 pb-1"
-              style={{ 
-                color: config.leftColumnTitleColor,
-                fontSize: config.titleSize,
-                marginBottom: config.contentMargins,
-                borderBottomColor: config.leftColumnTitleColor
-              }}
-            >
+        {skills && (skills.softSkills?.length > 0 || skills.hardSkills?.length > 0) && (
+          <div style={blockStyle}>
+            <h2 style={leftColumnTitleStyle}>
               Compétences
             </h2>
-            {skills.softSkills.length > 0 && (
+            {skills.softSkills && skills.softSkills.length > 0 && (
               <div style={{ marginBottom: config.contentMargins }}>
-                <h3 className="font-semibold mb-1" style={{ color: config.leftColumnTextColor }}>Soft Skills</h3>
-                <ul className="list-disc list-inside space-y-1">
+                <h3 style={{ fontWeight: '600', marginBottom: '4px', color: config.leftColumnTextColor }}>
+                  Soft Skills
+                </h3>
+                <ul style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
                   {skills.softSkills.map((skill, index) => (
-                    <li key={index} style={{ color: config.leftColumnTextColor }}>{skill}</li>
+                    <li key={index} style={{ color: config.leftColumnTextColor, marginBottom: '4px' }}>
+                      {skill}
+                    </li>
                   ))}
                 </ul>
               </div>
             )}
-            {skills.hardSkills.length > 0 && (
+            {skills.hardSkills && skills.hardSkills.length > 0 && (
               <div>
-                <h3 className="font-semibold mb-1" style={{ color: config.leftColumnTextColor }}>Hard Skills</h3>
-                <ul className="list-disc list-inside space-y-1">
+                <h3 style={{ fontWeight: '600', marginBottom: '4px', color: config.leftColumnTextColor }}>
+                  Hard Skills
+                </h3>
+                <ul style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
                   {skills.hardSkills.map((skill, index) => (
-                    <li key={index} style={{ color: config.leftColumnTextColor }}>{skill}</li>
+                    <li key={index} style={{ color: config.leftColumnTextColor, marginBottom: '4px' }}>
+                      {skill}
+                    </li>
                   ))}
                 </ul>
               </div>
@@ -197,44 +265,32 @@ export const CVTemplate1: React.FC<CVTemplate1Props> = ({ data, customization })
         )}
 
         {/* Certifications */}
-        {certifications.length > 0 && (
-          <div className="block" style={{ marginBottom: config.blockMargins }}>
-            <h2 
-              className="font-bold border-b-2 pb-1"
-              style={{ 
-                color: config.leftColumnTitleColor,
-                fontSize: config.titleSize,
-                marginBottom: config.contentMargins,
-                borderBottomColor: config.leftColumnTitleColor
-              }}
-            >
+        {certifications && certifications.length > 0 && (
+          <div style={blockStyle}>
+            <h2 style={leftColumnTitleStyle}>
               Certifications
             </h2>
-            <div className="space-y-1">
+            <div>
               {certifications.map(cert => cert.name && (
-                <div key={cert.id} style={{ color: config.leftColumnTextColor }}>{cert.name}</div>
+                <div key={cert.id} style={{ color: config.leftColumnTextColor, marginBottom: '4px' }}>
+                  {cert.name}
+                </div>
               ))}
             </div>
           </div>
         )}
 
         {/* Interests */}
-        {interests.length > 0 && (
-          <div className="block">
-            <h2 
-              className="font-bold border-b-2 pb-1"
-              style={{ 
-                color: config.leftColumnTitleColor,
-                fontSize: config.titleSize,
-                marginBottom: config.contentMargins,
-                borderBottomColor: config.leftColumnTitleColor
-              }}
-            >
+        {interests && interests.length > 0 && (
+          <div>
+            <h2 style={leftColumnTitleStyle}>
               Centres d'intérêt
             </h2>
-            <div className="space-y-1">
+            <div>
               {interests.map((interest, index) => (
-                <div key={index} style={{ color: config.leftColumnTextColor }}>{interest}</div>
+                <div key={index} style={{ color: config.leftColumnTextColor, marginBottom: '4px' }}>
+                  {interest}
+                </div>
               ))}
             </div>
           </div>
@@ -242,17 +298,16 @@ export const CVTemplate1: React.FC<CVTemplate1Props> = ({ data, customization })
       </aside>
 
       {/* Main Content */}
-      <main 
-        className="w-2/3 print:w-2/3" 
-        style={{ padding: `${config.verticalPadding} ${config.horizontalPadding}` }}
-      >
+      <main style={mainContentStyle}>
         {/* Header */}
-        <header style={{ marginBottom: config.blockMargins }}>
+        <header style={blockStyle}>
           <h1 
-            className={`font-bold mb-2 ${config.nameUppercase ? 'uppercase' : ''}`}
             style={{ 
               fontSize: config.nameSize,
-              color: config.nameColor
+              color: config.nameColor,
+              fontWeight: 'bold',
+              marginBottom: '8px',
+              textTransform: config.nameUppercase ? 'uppercase' : 'none'
             }}
           >
             {personalInfo.firstName || 'Votre'}{' '}
@@ -260,10 +315,10 @@ export const CVTemplate1: React.FC<CVTemplate1Props> = ({ data, customization })
           </h1>
           {personalInfo.jobTitle && (
             <h2 
-              className="font-normal"
               style={{ 
                 fontSize: '20px',
-                color: config.jobTitleColor
+                color: config.jobTitleColor,
+                fontWeight: 'normal'
               }}
             >
               {personalInfo.jobTitle}
@@ -273,50 +328,50 @@ export const CVTemplate1: React.FC<CVTemplate1Props> = ({ data, customization })
 
         {/* Profile */}
         {personalInfo.profile && (
-          <section style={{ marginBottom: config.blockMargins }}>
-            <h2 
-              className="font-bold border-b-2 pb-1"
-              style={{ 
-                fontSize: config.titleSize,
-                color: config.sectionTitleColor,
-                borderBottomColor: config.sectionTitleColor,
-                marginBottom: config.contentMargins
-              }}
-            >
+          <section style={blockStyle}>
+            <h2 style={sectionTitleStyle}>
               Profil
             </h2>
-            <p className={config.alignProfileJustify ? 'text-justify' : ''}>{personalInfo.profile}</p>
+            <p style={{ textAlign: config.alignProfileJustify ? 'justify' : 'left' }}>
+              {personalInfo.profile}
+            </p>
           </section>
         )}
 
         {/* Professional Experience */}
-        {experiences.length > 0 && (
-          <section style={{ marginBottom: config.blockMargins }}>
-            <h2 
-              className="font-bold border-b-2 pb-1"
-              style={{ 
-                fontSize: config.titleSize,
-                color: config.sectionTitleColor,
-                borderBottomColor: config.sectionTitleColor,
-                marginBottom: config.contentMargins
-              }}
-            >
+        {experiences && experiences.length > 0 && (
+          <section style={blockStyle}>
+            <h2 style={sectionTitleStyle}>
               Expériences professionnelles
             </h2>
             {experiences.map(exp => exp.title && (
               <article key={exp.id} style={{ marginBottom: config.contentMargins }}>
-                <h3 className="font-bold mb-1" style={{ color: config.companyColor }}>
-                  {exp.title}
-                  {exp.period && <span className="float-right font-normal text-gray-600">{exp.period}</span>}
-                </h3>
-                {exp.company && <p className="font-medium mb-1" style={{ color: config.companyColor }}>{exp.company}</p>}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <h3 style={{ fontWeight: 'bold', marginBottom: '4px', color: config.companyColor, flex: 1 }}>
+                    {exp.title}
+                  </h3>
+                  {exp.period && (
+                    <span style={{ fontWeight: 'normal', color: '#6b7280', marginLeft: '10px' }}>
+                      {exp.period}
+                    </span>
+                  )}
+                </div>
+                {exp.company && (
+                  <p style={{ fontWeight: '500', marginBottom: '4px', color: config.companyColor }}>
+                    {exp.company}
+                  </p>
+                )}
                 {exp.description && (
-                  <div className="text-justify">
+                  <div style={{ textAlign: 'justify' }}>
                     {exp.description.split('\n').map((line, index) => {
                       const trimmedLine = line.trim();
                       if (!trimmedLine) return null;
                       const formattedLine = trimmedLine.startsWith('•') ? trimmedLine : `• ${trimmedLine}`;
-                      return <p key={index} className="mb-1">{formattedLine}</p>;
+                      return (
+                        <p key={index} style={{ marginBottom: '4px' }}>
+                          {formattedLine}
+                        </p>
+                      );
                     })}
                   </div>
                 )}
@@ -326,47 +381,39 @@ export const CVTemplate1: React.FC<CVTemplate1Props> = ({ data, customization })
         )}
 
         {/* Education */}
-        {formations.length > 0 && (
-          <section style={{ marginBottom: config.blockMargins }}>
-            <h2 
-              className="font-bold border-b-2 pb-1"
-              style={{ 
-                fontSize: config.titleSize,
-                color: config.sectionTitleColor,
-                borderBottomColor: config.sectionTitleColor,
-                marginBottom: config.contentMargins
-              }}
-            >
+        {formations && formations.length > 0 && (
+          <section style={blockStyle}>
+            <h2 style={sectionTitleStyle}>
               Formations
             </h2>
             {formations.map(formation => formation.title && (
               <article key={formation.id} style={{ marginBottom: config.contentMargins }}>
-                <h3 className="font-bold mb-1" style={{ color: config.companyColor }}>
-                  {formation.title}
-                  {formation.period && <span className="float-right font-normal text-gray-600">{formation.period}</span>}
-                </h3>
-                {formation.description && <p className="text-justify">{formation.description}</p>}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <h3 style={{ fontWeight: 'bold', marginBottom: '4px', color: config.companyColor, flex: 1 }}>
+                    {formation.title}
+                  </h3>
+                  {formation.period && (
+                    <span style={{ fontWeight: 'normal', color: '#6b7280', marginLeft: '10px' }}>
+                      {formation.period}
+                    </span>
+                  )}
+                </div>
+                {formation.description && (
+                  <p style={{ textAlign: 'justify' }}>{formation.description}</p>
+                )}
               </article>
             ))}
           </section>
         )}
 
         {/* References */}
-        {references.length > 0 && (
+        {references && references.length > 0 && (
           <section>
-            <h2 
-              className="font-bold border-b-2 pb-1"
-              style={{ 
-                fontSize: config.titleSize,
-                color: config.sectionTitleColor,
-                borderBottomColor: config.sectionTitleColor,
-                marginBottom: config.contentMargins
-              }}
-            >
+            <h2 style={sectionTitleStyle}>
               Références
             </h2>
             {references.map(ref => ref.name && (
-              <p key={ref.id} className="mb-1">
+              <p key={ref.id} style={{ marginBottom: '4px' }}>
                 {ref.name}{ref.title && ` - ${ref.title}`}
               </p>
             ))}
