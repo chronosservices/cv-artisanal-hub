@@ -41,7 +41,13 @@ export const CVTemplate2: React.FC<CVTemplate2Props> = ({ data, customization })
   const config = { ...defaultCustomization, ...customization };
   
   return (
-    <div className="cv-template-2 flex max-w-4xl bg-white shadow-2xl font-sans text-sm leading-relaxed">
+    <div 
+      className="cv-template-2 flex max-w-4xl bg-white shadow-2xl font-sans text-sm leading-relaxed overflow-hidden"
+      style={{
+        minHeight: 'fit-content',
+        height: 'auto'
+      }}
+    >
       {/* Sidebar */}
       <aside className="w-1/3 bg-slate-800 text-white p-6">
         {/* Photo */}

@@ -137,8 +137,9 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onData
             id="firstName"
             value={data.personalInfo.firstName}
             onChange={(e) => updatePersonalInfo('firstName', e.target.value)}
-            placeholder="Sacha"
+            placeholder="Ex. : Marie"
             className="transition-all duration-300 focus:shadow-md focus:border-primary/50"
+            required
           />
         </div>
         <div className="space-y-2">
@@ -147,8 +148,9 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onData
             id="lastName"
             value={data.personalInfo.lastName}
             onChange={(e) => updatePersonalInfo('lastName', e.target.value)}
-            placeholder="Diarra"
+            placeholder="Ex. : Dupont"
             className="transition-all duration-300 focus:shadow-md focus:border-primary/50"
+            required
           />
         </div>
       </div>
@@ -159,9 +161,12 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onData
           id="jobTitle"
           value={data.personalInfo.jobTitle}
           onChange={(e) => updatePersonalInfo('jobTitle', e.target.value)}
-          placeholder="Chargée de communication"
+          placeholder="Ex. : Chargé de communication digitale"
           className="transition-all duration-300 focus:shadow-md focus:border-primary/50"
         />
+        <p className="text-xs text-muted-foreground">
+          💡 Tip: Utilisez un titre qui correspond au poste que vous visez
+        </p>
       </div>
 
       {/* Contact Info */}

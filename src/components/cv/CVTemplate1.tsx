@@ -60,11 +60,13 @@ export const CVTemplate1: React.FC<CVTemplate1Props> = ({ data, customization })
 
   return (
     <div 
-      className="cv-template-1 flex max-w-4xl bg-white shadow-2xl font-sans leading-relaxed print:shadow-none print:max-w-none"
+      className="cv-template-1 flex max-w-4xl bg-white shadow-2xl font-sans leading-relaxed print:shadow-none print:max-w-none overflow-hidden"
       style={{ 
         ...customStyles,
         fontSize: config.textSize,
-        fontFamily: config.textFont === 'OpenSans' ? 'system-ui, -apple-system, sans-serif' : config.textFont
+        fontFamily: config.textFont === 'OpenSans' ? 'system-ui, -apple-system, sans-serif' : config.textFont,
+        minHeight: 'fit-content',
+        height: 'auto'
       }}
     >
       {/* Sidebar */}

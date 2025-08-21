@@ -21,7 +21,7 @@ export const CVPreview: React.FC<CVPreviewProps> = ({ data, selectedTemplate, cu
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="bg-gray-100 p-4 rounded-lg overflow-auto max-h-[800px]" id="cv-preview-container">
+        <div className="bg-muted/20 dark:bg-muted/10 p-4 rounded-lg overflow-auto max-h-[800px]" id="cv-preview-container">
           {selectedTemplate === 1 ? (
             <CVTemplate1 data={data} customization={customization} />
           ) : (

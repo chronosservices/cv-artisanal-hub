@@ -4,6 +4,7 @@ import { TemplateSelector } from '@/components/cv/TemplateSelector';
 import { useCVData } from '@/hooks/useCVData';
 import { useCVCustomization } from '@/hooks/useCVCustomization';
 import { CVCustomizer } from '@/components/cv/CVCustomizer';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { FileText, Sparkles } from 'lucide-react';
 
 const Index = () => {
@@ -21,7 +22,10 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-primary/5">
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-primary/5 relative">
+      {/* Theme Toggle */}
+      <ThemeToggle />
+      
       {/* Header */}
       <div className="bg-gradient-to-r from-primary to-primary-glow shadow-xl">
         <div className="container mx-auto px-6 py-8">

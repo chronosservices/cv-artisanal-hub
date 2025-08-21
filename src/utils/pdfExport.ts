@@ -8,83 +8,95 @@ export const exportToPDF = async (elementId: string, filename: string) => {
       throw new Error('Element not found');
     }
 
-    // Create canvas from HTML element with better settings for CV content
+    // Store original classes and styles
+    const originalClasses = element.className;
+    const originalStyle = element.style.cssText;
+    
+    // Apply print-specific styles
+    element.className = `${originalClasses} cv-print-container cv-a4-format`;
+    element.style.cssText = `
+      ${originalStyle}
+      width: 210mm !important;
+      min-height: 297mm !important;
+      max-width: none !important;
+      margin: 0 !important;
+      padding: 20mm !important;
+      box-sizing: border-box !important;
+      background: white !important;
+      color: black !important;
+      font-size: 14px !important;
+      line-height: 1.4 !important;
+    `;
+
+    // Wait for styles to apply
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    // Create canvas with optimized settings
     const canvas = await html2canvas(element, {
-      scale: 2, // Optimized scale for A4 format
+      scale: 3,
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
       logging: false,
-      width: element.offsetWidth,
-      height: element.offsetHeight,
+      width: element.scrollWidth,
+      height: element.scrollHeight,
       scrollX: 0,
       scrollY: 0,
       foreignObjectRendering: true,
-      imageTimeout: 0
+      imageTimeout: 5000,
+      removeContainer: false,
+      onclone: (clonedDoc) => {
+        // Ensure all styles are applied in the cloned document
+        const clonedElement = clonedDoc.getElementById(elementId);
+        if (clonedElement) {
+          clonedElement.style.cssText = element.style.cssText;
+        }
+      }
     });
 
-    // Calculate dimensions
-    const imgData = canvas.toDataURL('image/png', 1.0); // Max quality
+    // Restore original styles
+    element.className = originalClasses;
+    element.style.cssText = originalStyle;
+
+    // Create PDF with exact A4 dimensions
+    const imgData = canvas.toDataURL('image/png', 1.0);
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
-      format: 'a4'
+      format: 'a4',
+      compress: true
     });
 
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const pdfWidth = pdf.internal.pageSize.getWidth(); // 210mm
+    const pdfHeight = pdf.internal.pageSize.getHeight(); // 297mm
     
-    // Calculate canvas dimensions in mm
-    const canvasWidth = canvas.width;
-    const canvasHeight = canvas.height;
+    // Calculate image dimensions to fit A4
+    const canvasAspectRatio = canvas.width / canvas.height;
+    const pdfAspectRatio = pdfWidth / pdfHeight;
     
-    // Calculate A4 dimensions with proper scaling
-    const A4_WIDTH_MM = 210;
-    const A4_HEIGHT_MM = 297;
-    const margin = 5; // 5mm margin for better content visibility
+    let imgWidth, imgHeight;
     
-    const availableWidth = A4_WIDTH_MM - (2 * margin);
-    const availableHeight = A4_HEIGHT_MM - (2 * margin);
-    
-    // Calculate scale to fit content to A4
-    const scaleX = availableWidth / (canvasWidth / 3.78); // Convert px to mm (1mm = 3.78px at 96dpi)
-    const scaleY = availableHeight / (canvasHeight / 3.78);
-    const scale = Math.min(scaleX, scaleY, 1); // Don't upscale
-    
-    const imgWidth = (canvasWidth / 3.78) * scale;
-    const imgHeight = (canvasHeight / 3.78) * scale;
-    
-    const x = margin + (availableWidth - imgWidth) / 2;
-    const y = margin + (availableHeight - imgHeight) / 2;
-
-    // Ensure content fits on single page
-    if (imgHeight > availableHeight) {
-      // Split into multiple pages if needed
-      const pageHeight = availableHeight;
-      const totalPages = Math.ceil(imgHeight / pageHeight);
-      
-      for (let page = 0; page < totalPages; page++) {
-        if (page > 0) pdf.addPage();
-        
-        const sourceY = (page * pageHeight * canvasHeight) / imgHeight;
-        const sourceHeight = Math.min(pageHeight * canvasHeight / imgHeight, canvasHeight - sourceY);
-        
-        // Create a new canvas for this page section
-        const pageCanvas = document.createElement('canvas');
-        pageCanvas.width = canvasWidth;
-        pageCanvas.height = sourceHeight;
-        const pageCtx = pageCanvas.getContext('2d');
-        
-        if (pageCtx) {
-          pageCtx.drawImage(canvas, 0, sourceY, canvasWidth, sourceHeight, 0, 0, canvasWidth, sourceHeight);
-          const pageImgData = pageCanvas.toDataURL('image/png', 1.0);
-          pdf.addImage(pageImgData, 'PNG', x, margin, imgWidth, pageHeight);
-        }
-      }
+    if (canvasAspectRatio > pdfAspectRatio) {
+      // Canvas is wider than A4
+      imgWidth = pdfWidth;
+      imgHeight = pdfWidth / canvasAspectRatio;
     } else {
-      pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
+      // Canvas is taller than A4
+      imgHeight = pdfHeight;
+      imgWidth = pdfHeight * canvasAspectRatio;
     }
+    
+    // Center the image on the page
+    const x = (pdfWidth - imgWidth) / 2;
+    const y = (pdfHeight - imgHeight) / 2;
+
+    // Add image to PDF
+    pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight, undefined, 'FAST');
+    
+    // Save the PDF
     pdf.save(filename);
+    
+    return true;
   } catch (error) {
     console.error('Error exporting PDF:', error);
     throw error;
