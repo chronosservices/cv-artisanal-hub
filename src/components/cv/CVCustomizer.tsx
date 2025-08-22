@@ -60,42 +60,62 @@ export const CVCustomizer: React.FC<CVCustomizerProps> = ({
   };
 
   return (
-    <Card className="max-w-4xl mx-auto shadow-2xl border-0 bg-gradient-to-br from-card via-card to-muted/20">
-      <CardHeader className="bg-gradient-to-r from-primary to-primary-glow text-primary-foreground">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-xl">
-            <Palette className="w-6 h-6" />
+    <Card className="max-w-5xl mx-auto shadow-2xl border-0 bg-gradient-to-br from-card via-card to-muted/20">
+      <CardHeader className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+            <Palette className="w-5 h-5 sm:w-6 sm:h-6" />
             Personnalisation avancée
           </CardTitle>
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full sm:w-auto">
             <Button
               variant="secondary"
               size="sm"
               onClick={resetToDefault}
-              className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+              className="flex-1 sm:flex-none bg-white/20 hover:bg-white/30 text-white border-white/30 text-xs sm:text-sm py-2 px-3 min-h-[36px]"
             >
-              <RotateCcw className="w-4 h-4 mr-2" />
+              <RotateCcw className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
               Réinitialiser
             </Button>
             <Button
               variant="secondary"
               size="sm"
               onClick={onClose}
-              className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+              className="bg-white/20 hover:bg-white/30 text-white border-white/30 text-xs sm:text-sm py-2 px-2 min-h-[36px] min-w-[36px]"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3 h-3 sm:w-4 sm:h-4" />
             </Button>
           </div>
         </div>
       </CardHeader>
       
-      <CardContent className="p-6">
-        <Tabs defaultValue="colors" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-muted/50">
-            <TabsTrigger value="colors" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Couleurs</TabsTrigger>
-            <TabsTrigger value="layout" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Mise en page</TabsTrigger>
-            <TabsTrigger value="typography" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Typographie</TabsTrigger>
-            <TabsTrigger value="spacing" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Espacements</TabsTrigger>
+      <CardContent className="p-4 sm:p-6">
+        <Tabs defaultValue="colors" className="space-y-4 sm:space-y-6">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-1 sm:gap-2 h-auto p-1 bg-muted/30">
+            <TabsTrigger 
+              value="colors" 
+              className="text-xs sm:text-sm py-2 sm:py-3 px-2 sm:px-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all min-h-[40px] flex items-center justify-center"
+            >
+              Couleurs
+            </TabsTrigger>
+            <TabsTrigger 
+              value="layout" 
+              className="text-xs sm:text-sm py-2 sm:py-3 px-2 sm:px-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all min-h-[40px] flex items-center justify-center"
+            >
+              Mise en page
+            </TabsTrigger>
+            <TabsTrigger 
+              value="typography" 
+              className="text-xs sm:text-sm py-2 sm:py-3 px-2 sm:px-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all min-h-[40px] flex items-center justify-center"
+            >
+              Typographie
+            </TabsTrigger>
+            <TabsTrigger 
+              value="spacing" 
+              className="text-xs sm:text-sm py-2 sm:py-3 px-2 sm:px-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-md transition-all min-h-[40px] flex items-center justify-center"
+            >
+              Espacements
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="colors">

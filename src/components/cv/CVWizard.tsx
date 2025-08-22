@@ -11,7 +11,7 @@ import { FinalStep } from './wizard/FinalStep';
 import { CVData, CVCustomization } from '@/types/cv';
 import { exportToPDF } from '@/utils/pdfExport';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, ArrowRight, Eye, Download, ChevronLeft, Palette } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Eye, Download, ChevronLeft, Palette, Loader2 } from 'lucide-react';
 
 interface CVWizardProps {
   data: CVData;
@@ -60,12 +60,12 @@ export const CVWizard: React.FC<CVWizardProps> = ({
   const handleExportPDF = async () => {
     setIsExporting(true);
     try {
-      const filename = `CV_${data.personalInfo.firstName || 'Mon'}_${data.personalInfo.lastName || 'CV'}`.replace(/[^a-z0-9]/gi, '_') + '.pdf';
+      const filename = `CV_${data.personalInfo.firstName || 'Mon'}_${data.personalInfo.lastName || 'CV'}`.replace(/[^a-z0-9]/gi, '_');
       
       // Attendre un peu pour s'assurer que le rendu est complet
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise(resolve => setTimeout(resolve, 500));
       
-      await exportToPDF('cv-preview-container', filename);
+      await exportToPDF('cv-template-content', filename);
       toast({
         title: "CV exporté avec succès !",
         description: "Votre CV a été téléchargé au format PDF.",
@@ -101,26 +101,35 @@ export const CVWizard: React.FC<CVWizardProps> = ({
 
   if (showPreview) {
     return (
-      <div className="min-h-screen bg-background p-2 sm:p-4">
+      <div className="min-h-screen bg-background p-3 sm:p-6">
         {/* Header mobile responsif */}
-        <div className="mb-4 p-3 bg-card rounded-lg border shadow-sm">
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
+        <div className="mb-6 p-4 bg-card rounded-lg border shadow-sm">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <Button
               variant="outline"
               onClick={() => setShowPreview(false)}
-              className="flex items-center justify-center gap-2 text-xs sm:text-sm h-8 sm:h-10 flex-1 sm:flex-none"
+              className="flex items-center justify-center gap-2 text-sm py-3 px-4 min-h-[44px] flex-1 sm:flex-none border-primary/20 hover:border-primary hover:bg-primary/5 transition-all"
               disabled={isExporting}
             >
-              <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
-              Retour
+              <ChevronLeft className="w-4 h-4" />
+              Retour au formulaire
             </Button>
             <Button
               onClick={handleExportPDF}
               disabled={isExporting}
-              className="flex items-center justify-center gap-2 text-xs sm:text-sm h-8 sm:h-10 flex-1 sm:flex-none bg-gradient-to-r from-secondary to-accent"
+              className="flex items-center justify-center gap-2 text-sm py-3 px-4 min-h-[44px] flex-1 sm:flex-none bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all"
             >
-              <Download className="w-3 h-3 sm:w-4 sm:h-4" />
-              {isExporting ? 'Export...' : 'PDF'}
+              {isExporting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span className="truncate">Génération PDF...</span>
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4" />
+                  <span className="truncate">Télécharger PDF</span>
+                </>
+              )}
             </Button>
           </div>
         </div>

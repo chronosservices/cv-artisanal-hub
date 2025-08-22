@@ -152,21 +152,24 @@ export const exportToPDF = async (elementId: string, filename: string) => {
         console.log('Document cloné pour capture html2canvas');
         
         // Appliquer les styles de base au document cloné
-        const style = clonedDoc.createElement('style');
-        style.textContent = `
-          * {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-            color-adjust: exact !important;
-          }
-          body, div, p, span, h1, h2, h3, h4, h5, h6 {
-            color: #000000 !important;
-            background: transparent !important;
-          }
-          .bg-white { background: white !important; }
-          .text-black { color: black !important; }
-        `;
-        clonedDoc.head.appendChild(style);
+        // Vérifier si head existe avant d'essayer d'ajouter des styles
+        if (clonedDoc.head) {
+          const style = clonedDoc.createElement('style');
+          style.textContent = `
+            * {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+              color-adjust: exact !important;
+            }
+            body, div, p, span, h1, h2, h3, h4, h5, h6 {
+              color: #000000 !important;
+              background: transparent !important;
+            }
+            .bg-white { background: white !important; }
+            .text-black { color: black !important; }
+          `;
+          clonedDoc.head.appendChild(style);
+        }
         
         // Forcer les couleurs sur tous les éléments
         const allElements = clonedDoc.querySelectorAll('*');
