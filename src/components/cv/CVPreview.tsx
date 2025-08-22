@@ -13,20 +13,32 @@ interface CVPreviewProps {
 
 export const CVPreview: React.FC<CVPreviewProps> = ({ data, selectedTemplate, customization }) => {
   return (
-    <Card className="shadow-xl border-0 bg-gradient-to-br from-card via-card to-muted/20 sticky top-6">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-primary">
-          <Eye className="w-5 h-5" />
-          Aperçu en temps réel
+    <Card className="shadow-xl border-0 bg-gradient-to-br from-card via-card to-muted/20 sticky top-2 sm:top-6">
+      <CardHeader className="pb-2 sm:pb-6">
+        <CardTitle className="flex items-center gap-2 text-primary text-sm sm:text-base">
+          <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
+          Aperçu
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="bg-muted/20 dark:bg-muted/10 p-4 rounded-lg overflow-auto max-h-[800px]" id="cv-preview-container">
-          {selectedTemplate === 1 ? (
-            <CVTemplate1 data={data} customization={customization} />
-          ) : (
-            <CVTemplate2 data={data} customization={customization} />
-          )}
+      <CardContent className="p-2 sm:p-6">
+        <div 
+          className="bg-white dark:bg-white rounded-lg overflow-hidden border border-gray-200 max-h-[70vh] sm:max-h-[800px] overflow-y-auto"
+          id="cv-preview-container"
+          style={{ 
+            transform: 'scale(0.5)',
+            transformOrigin: 'top left',
+            width: '200%',
+            height: '200%',
+            maxHeight: '140vh'
+          }}
+        >
+          <div id="cv-template-content" className="cv-template">
+            {selectedTemplate === 1 ? (
+              <CVTemplate1 data={data} customization={customization} />
+            ) : (
+              <CVTemplate2 data={data} customization={customization} />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>

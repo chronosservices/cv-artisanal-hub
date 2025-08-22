@@ -3,104 +3,121 @@ import jsPDF from 'jspdf';
 
 export const exportToPDF = async (elementId: string, filename: string) => {
   try {
-    // Trouver directement le template CV qui contient les données
-    let element: HTMLElement | null = null;
+    console.log('Début export PDF pour:', filename);
     
-    // Chercher le template CV dans l'aperçu
-    const cvTemplate = document.querySelector('.cv-template') as HTMLElement;
-    if (cvTemplate) {
-      element = cvTemplate;
-      console.log('Template CV trouvé directement:', element);
+    // Chercher l'élément CV content directement
+    let sourceElement: HTMLElement | null = null;
+    
+    // 1. Chercher par ID cv-template-content
+    sourceElement = document.getElementById('cv-template-content');
+    console.log('Template content trouvé:', sourceElement);
+    
+    // 2. Fallback: chercher .cv-template
+    if (!sourceElement) {
+      sourceElement = document.querySelector('.cv-template') as HTMLElement;
+      console.log('Template par classe trouvé:', sourceElement);
     }
     
-    // Fallback : chercher dans le conteneur d'aperçu
-    if (!element) {
-      const previewContainer = document.getElementById('cv-preview-container');
-      if (previewContainer) {
-        element = previewContainer.querySelector('.cv-template') as HTMLElement;
-        console.log('Template trouvé dans conteneur:', element);
+    // 3. Fallback: chercher dans cv-preview-container
+    if (!sourceElement) {
+      const container = document.getElementById('cv-preview-container');
+      if (container) {
+        sourceElement = container.querySelector('.cv-template, [data-cv-template]') as HTMLElement;
+        console.log('Template dans container trouvé:', sourceElement);
       }
     }
     
-    // Dernier fallback : chercher par attribut data
-    if (!element) {
-      element = document.querySelector('[data-cv-template]') as HTMLElement;
-    }
-    
-    // Nouveau fallback : utiliser l'elementId fourni
-    if (!element && elementId) {
-      element = document.getElementById(elementId);
-      console.log('Element trouvé par ID:', elementId, element);
-    }
-    
-    if (!element) {
-      console.error('Aucun template CV trouvé');
-      throw new Error('Template CV non trouvé. Assurez-vous que le CV est affiché.');
+    if (!sourceElement) {
+      console.error('Aucun élément CV trouvé pour export');
+      throw new Error('CV non trouvé. Veuillez vous assurer que le CV est affiché.');
     }
 
-    console.log('Template CV sélectionné pour export:', element);
-    console.log('Contenu de l\'élément:', element.innerHTML.substring(0, 200));
-    console.log('Dimensions originales:', element.offsetWidth, 'x', element.offsetHeight);
+    console.log('Element source pour export:', sourceElement);
+    console.log('Dimensions source:', sourceElement.offsetWidth, 'x', sourceElement.offsetHeight);
+    console.log('Contenu:', sourceElement.innerHTML.substring(0, 100));
 
     // Vérifier que l'élément a du contenu
-    if (!element.innerHTML.trim()) {
-      throw new Error('L\'élément CV est vide');
+    if (!sourceElement.innerHTML.trim()) {
+      throw new Error('Le CV est vide. Veuillez remplir au moins les informations de base.');
     }
 
-    // Créer un conteneur temporaire pour l'export avec dimensions fixes A4
+    // Créer un conteneur temporaire visible dans la page pour le debug
     const tempContainer = document.createElement('div');
+    tempContainer.id = 'pdf-export-container';
     tempContainer.style.cssText = `
       position: fixed;
-      top: -9999px;
-      left: -9999px;
-      width: 794px !important;
-      min-height: 1123px !important;
-      background: white !important;
-      padding: 40px !important;
-      box-sizing: border-box !important;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important;
-      z-index: 9999;
-      overflow: visible !important;
+      top: -10000px;
+      left: 0;
+      width: 210mm;
+      min-height: 297mm;
+      background: white;
+      padding: 20mm;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+      z-index: 99999;
+      overflow: visible;
+      transform: scale(1);
+      transform-origin: top left;
     `;
     
-    // Cloner l'élément CV et l'ajouter au conteneur temporaire
-    const clonedElement = element.cloneNode(true) as HTMLElement;
+    // Cloner l'élément source
+    const clonedElement = sourceElement.cloneNode(true) as HTMLElement;
     
-    // Appliquer les styles au clone
+    // Nettoyer et ajuster le clone pour l'export
     clonedElement.style.cssText = `
-      width: 100% !important;
-      max-width: none !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      background: transparent !important;
-      transform: none !important;
-      position: relative !important;
-      display: block !important;
-      visibility: visible !important;
-      opacity: 1 !important;
-      overflow: visible !important;
-      min-height: auto !important;
-      height: auto !important;
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      padding: 0;
+      background: white;
+      transform: none;
+      position: relative;
+      display: block;
+      visibility: visible;
+      opacity: 1;
+      overflow: visible;
+      min-height: auto;
+      height: auto;
+      font-size: 12px;
+      line-height: 1.4;
+      color: black;
     `;
     
-    // Forcer la visibilité de tous les enfants
-    const allChildElements = clonedElement.querySelectorAll('*');
-    allChildElements.forEach((child: Element) => {
+    // Forcer tous les styles pour la lisibilité
+    const allElements = clonedElement.querySelectorAll('*');
+    allElements.forEach((child: Element) => {
       const htmlChild = child as HTMLElement;
       if (htmlChild.style) {
+        // Forcer la visibilité
         htmlChild.style.visibility = 'visible';
         htmlChild.style.opacity = '1';
-        htmlChild.style.display = htmlChild.style.display === 'none' ? 'block' : htmlChild.style.display || 'block';
+        
+        // Forcer les couleurs de base
+        if (htmlChild.tagName === 'H1' || htmlChild.tagName === 'H2' || htmlChild.tagName === 'H3') {
+          htmlChild.style.color = htmlChild.style.color || '#000000';
+          htmlChild.style.fontWeight = 'bold';
+        } else if (htmlChild.tagName === 'P' || htmlChild.tagName === 'SPAN' || htmlChild.tagName === 'DIV') {
+          htmlChild.style.color = htmlChild.style.color || '#000000';
+        }
+        
+        // Supprimer les transformations et styles problématiques
+        htmlChild.style.transform = 'none';
+        htmlChild.style.filter = 'none';
+        
+        // Assurer l'affichage des blocs
+        if (htmlChild.style.display === 'none') {
+          htmlChild.style.display = 'block';
+        }
       }
     });
     
     tempContainer.appendChild(clonedElement);
     document.body.appendChild(tempContainer);
     
-    // Attendre que le DOM soit mis à jour et que les fonts se chargent
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Attendre le rendu
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Attendre que les fonts soient chargées
+    // Attendre les fonts
     if (document.fonts && document.fonts.ready) {
       await document.fonts.ready;
     }
@@ -108,56 +125,64 @@ export const exportToPDF = async (elementId: string, filename: string) => {
     console.log('Début de la capture avec html2canvas...');
     console.log('Dimensions du conteneur temporaire:', tempContainer.offsetWidth, 'x', tempContainer.offsetHeight);
 
-    // Capturer le conteneur temporaire avec des options améliorées
+    console.log('Capture avec html2canvas...');
+    console.log('Dimensions container:', tempContainer.offsetWidth, 'x', tempContainer.offsetHeight);
+
+    // Capturer avec des options optimisées
     const canvas = await html2canvas(tempContainer, {
-      scale: 2,
+      scale: 3, // Augmenter la qualité
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
-      logging: false, // Désactiver les logs pour éviter le spam
-      width: 794,
-      height: Math.max(1123, tempContainer.scrollHeight + 80), // Hauteur dynamique
+      logging: true, // Activer pour debug
+      width: Math.floor(210 * 3.78), // 210mm en pixels à 96dpi * 3.78
+      height: Math.floor(297 * 3.78), // 297mm en pixels à 96dpi * 3.78
       scrollX: 0,
       scrollY: 0,
-      foreignObjectRendering: true,
-      imageTimeout: 15000,
+      foreignObjectRendering: false, // Désactiver pour compatibilité
+      imageTimeout: 30000,
       removeContainer: false,
       ignoreElements: (element) => {
-        // Ignorer les éléments cachés ou avec opacity 0
         const style = window.getComputedStyle(element);
         return style.display === 'none' || 
                style.visibility === 'hidden' || 
-               style.opacity === '0' ||
-               element.tagName === 'SCRIPT' ||
-               element.tagName === 'NOSCRIPT';
+               parseFloat(style.opacity) === 0;
       },
-      onclone: (clonedDoc, clonedElement) => {
-        console.log('Document cloné pour capture');
+      onclone: (clonedDoc, element) => {
+        console.log('Document cloné pour capture html2canvas');
         
-        if (clonedElement) {
-          clonedElement.style.width = '794px';
-          clonedElement.style.minHeight = '1123px';
-          clonedElement.style.background = 'white';
-          clonedElement.style.color = '#000000';
-          clonedElement.style.fontSize = '14px';
-        }
+        // Appliquer les styles de base au document cloné
+        const style = clonedDoc.createElement('style');
+        style.textContent = `
+          * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+          }
+          body, div, p, span, h1, h2, h3, h4, h5, h6 {
+            color: #000000 !important;
+            background: transparent !important;
+          }
+          .bg-white { background: white !important; }
+          .text-black { color: black !important; }
+        `;
+        clonedDoc.head.appendChild(style);
         
-        // Forcer la visibilité et les couleurs par défaut
+        // Forcer les couleurs sur tous les éléments
         const allElements = clonedDoc.querySelectorAll('*');
         allElements.forEach((el: Element) => {
           const htmlEl = el as HTMLElement;
           if (htmlEl.style) {
-            // Forcer la visibilité
-            if (htmlEl.style.display === 'none') return;
-            htmlEl.style.visibility = 'visible';
-            htmlEl.style.opacity = htmlEl.style.opacity || '1';
+            // Nettoyer les transformations
+            htmlEl.style.transform = 'none';
+            htmlEl.style.transition = 'none';
+            htmlEl.style.animation = 'none';
             
-            // Forcer les couleurs de base si elles ne sont pas définies
-            if (!htmlEl.style.color && htmlEl.tagName !== 'IMG') {
-              htmlEl.style.color = '#000000';
-            }
-            if (!htmlEl.style.backgroundColor && (htmlEl.tagName === 'DIV' || htmlEl.tagName === 'SECTION')) {
-              htmlEl.style.backgroundColor = 'transparent';
+            // Forcer les couleurs
+            if (htmlEl.tagName === 'P' || htmlEl.tagName === 'SPAN' || htmlEl.tagName === 'DIV') {
+              if (!htmlEl.style.color || htmlEl.style.color === 'inherit') {
+                htmlEl.style.color = '#000000';
+              }
             }
           }
         });

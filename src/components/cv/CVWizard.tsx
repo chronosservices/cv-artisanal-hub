@@ -101,29 +101,34 @@ export const CVWizard: React.FC<CVWizardProps> = ({
 
   if (showPreview) {
     return (
-      <div className="space-y-6">
-        <Card className="shadow-lg border-0 bg-gradient-to-br from-card via-card to-muted/20">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <Button
-                variant="outline"
-                onClick={() => setShowPreview(false)}
-                className="flex items-center gap-2"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                Retour au formulaire
-              </Button>
-              <Button
-                onClick={handleExportPDF}
-                className="flex items-center gap-2 bg-gradient-to-r from-secondary to-accent"
-              >
-                <Download className="w-4 h-4" />
-                Télécharger PDF
-              </Button>
-            </div>
-          </CardHeader>
-        </Card>
-        <CVPreview data={data} selectedTemplate={selectedTemplate} customization={customization} />
+      <div className="min-h-screen bg-background p-2 sm:p-4">
+        {/* Header mobile responsif */}
+        <div className="mb-4 p-3 bg-card rounded-lg border shadow-sm">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
+            <Button
+              variant="outline"
+              onClick={() => setShowPreview(false)}
+              className="flex items-center justify-center gap-2 text-xs sm:text-sm h-8 sm:h-10 flex-1 sm:flex-none"
+              disabled={isExporting}
+            >
+              <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
+              Retour
+            </Button>
+            <Button
+              onClick={handleExportPDF}
+              disabled={isExporting}
+              className="flex items-center justify-center gap-2 text-xs sm:text-sm h-8 sm:h-10 flex-1 sm:flex-none bg-gradient-to-r from-secondary to-accent"
+            >
+              <Download className="w-3 h-3 sm:w-4 sm:h-4" />
+              {isExporting ? 'Export...' : 'PDF'}
+            </Button>
+          </div>
+        </div>
+        
+        {/* CV Preview avec meilleure responsivité */}
+        <div className="w-full overflow-hidden">
+          <CVPreview data={data} selectedTemplate={selectedTemplate} customization={customization} />
+        </div>
       </div>
     );
   }
@@ -132,33 +137,36 @@ export const CVWizard: React.FC<CVWizardProps> = ({
     <div className="space-y-6">
       {/* Header with progress */}
       <Card className="shadow-lg border-0 bg-gradient-to-br from-card via-card to-muted/20 animate-fade-in">
-        <CardHeader>
-          <div className="flex items-center justify-between mb-4">
-            <Button
-              variant="outline"
-              onClick={onBackToTemplates}
-              className="flex items-center gap-2"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Changer de modèle
-            </Button>
-            <div className="flex gap-2">
+        <CardHeader className="pb-4">
+          {/* Header mobile-first responsive */}
+          <div className="space-y-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
               <Button
                 variant="outline"
-                onClick={onOpenCustomizer}
-                className="flex items-center gap-2 border-secondary/50 text-secondary hover:bg-secondary/5"
+                onClick={onBackToTemplates}
+                className="flex items-center justify-center gap-2 text-xs sm:text-sm h-8 sm:h-10 flex-1 sm:flex-none"
               >
-                <Palette className="w-4 h-4" />
-                Personnaliser
+                <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
+                Modèle
               </Button>
-              <Button
-                variant="outline"
-                onClick={() => setShowPreview(true)}
-                className="flex items-center gap-2 border-primary/50 text-primary hover:bg-primary/5 md:hidden"
-              >
-                <Eye className="w-4 h-4" />
-                Aperçu
-              </Button>
+              <div className="flex gap-2 flex-1 sm:flex-none">
+                <Button
+                  variant="outline"
+                  onClick={onOpenCustomizer}
+                  className="flex items-center justify-center gap-2 text-xs sm:text-sm h-8 sm:h-10 flex-1 border-secondary/50 text-secondary hover:bg-secondary/5"
+                >
+                  <Palette className="w-3 h-3 sm:w-4 sm:h-4" />
+                  Style
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowPreview(true)}
+                  className="flex items-center justify-center gap-2 text-xs sm:text-sm h-8 sm:h-10 flex-1 border-primary/50 text-primary hover:bg-primary/5 md:hidden"
+                >
+                  <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
+                  Aperçu
+                </Button>
+              </div>
             </div>
           </div>
           
@@ -204,53 +212,56 @@ export const CVWizard: React.FC<CVWizardProps> = ({
         </CardHeader>
       </Card>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
         {/* Form Content */}
         <div className="xl:col-span-2">
           <Card className="shadow-lg border-0 bg-gradient-to-br from-card via-card to-muted/20 animate-scale-in">
-            <CardContent className="p-6">
+            <CardContent className="p-3 sm:p-6">
               {renderStepContent()}
             </CardContent>
           </Card>
 
-          {/* Navigation */}
-          <div className="flex items-center justify-between mt-6">
-            <Button
-              variant="outline"
-              onClick={handlePrevious}
-              disabled={currentStep === 1}
-              className="flex items-center gap-2"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Précédent
-            </Button>
-
-            <Button
-              variant="outline"
-              onClick={() => setShowPreview(true)}
-              className="flex items-center gap-2 border-primary/50 text-primary hover:bg-primary/5 md:hidden"
-            >
-              <Eye className="w-4 h-4" />
-              Aperçu
-            </Button>
-
-            {currentStep === steps.length ? (
+          {/* Navigation responsive */}
+          <div className="mt-6 p-3 bg-muted/30 rounded-lg">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
               <Button
-                onClick={handleExportPDF}
-                className="flex items-center gap-2 bg-gradient-to-r from-secondary to-accent"
+                variant="outline"
+                onClick={handlePrevious}
+                disabled={currentStep === 1}
+                className="flex items-center justify-center gap-2 text-xs sm:text-sm h-8 sm:h-10 flex-1 sm:flex-none"
               >
-                <Download className="w-4 h-4" />
-                Télécharger PDF
+                <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" />
+                Précédent
               </Button>
-            ) : (
+
               <Button
-                onClick={handleNext}
-                className="flex items-center gap-2 bg-gradient-to-r from-primary to-primary-glow"
+                variant="outline"
+                onClick={() => setShowPreview(true)}
+                className="flex items-center justify-center gap-2 text-xs sm:text-sm h-8 sm:h-10 flex-1 border-primary/50 text-primary hover:bg-primary/5 md:hidden"
               >
-                Suivant
-                <ArrowRight className="w-4 h-4" />
+                <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
+                Aperçu
               </Button>
-            )}
+
+              {currentStep === steps.length ? (
+                <Button
+                  onClick={handleExportPDF}
+                  disabled={isExporting}
+                  className="flex items-center justify-center gap-2 text-xs sm:text-sm h-8 sm:h-10 flex-1 sm:flex-none bg-gradient-to-r from-secondary to-accent"
+                >
+                  <Download className="w-3 h-3 sm:w-4 sm:h-4" />
+                  {isExporting ? 'Export...' : 'PDF'}
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleNext}
+                  className="flex items-center justify-center gap-2 text-xs sm:text-sm h-8 sm:h-10 flex-1 sm:flex-none bg-gradient-to-r from-primary to-primary-glow"
+                >
+                  Suivant
+                  <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
+                </Button>
+              )}
+            </div>
           </div>
         </div>
 
