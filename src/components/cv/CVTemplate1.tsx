@@ -153,7 +153,7 @@ export const CVTemplate1: React.FC<CVTemplate1Props> = ({ data, customization })
                   gap: '8px'
                 }}
               >
-                {!config.hideInfoIcons && <span>📞</span>} {personalInfo.phone}
+                {!config.hideInfoIcons && <span style={{fontSize:'10px',fontWeight:600,color:config.leftColumnTitleColor,textTransform:'uppercase',letterSpacing:'0.05em',minWidth:'42px'}}>Tél</span>} {personalInfo.phone}
               </div>
             )}
             {personalInfo.email && (
@@ -166,7 +166,7 @@ export const CVTemplate1: React.FC<CVTemplate1Props> = ({ data, customization })
                   gap: '8px'
                 }}
               >
-                {!config.hideInfoIcons && <span>✉️</span>} {personalInfo.email}
+                {!config.hideInfoIcons && <span style={{fontSize:'10px',fontWeight:600,color:config.leftColumnTitleColor,textTransform:'uppercase',letterSpacing:'0.05em',minWidth:'42px'}}>Email</span>} {personalInfo.email}
               </div>
             )}
             {personalInfo.address && (
@@ -179,7 +179,7 @@ export const CVTemplate1: React.FC<CVTemplate1Props> = ({ data, customization })
                   gap: '8px'
                 }}
               >
-                {!config.hideInfoIcons && <span>📍</span>} {personalInfo.address}
+                {!config.hideInfoIcons && <span style={{fontSize:'10px',fontWeight:600,color:config.leftColumnTitleColor,textTransform:'uppercase',letterSpacing:'0.05em',minWidth:'42px'}}>Adresse</span>} {personalInfo.address}
               </div>
             )}
             {personalInfo.age && (
@@ -192,7 +192,7 @@ export const CVTemplate1: React.FC<CVTemplate1Props> = ({ data, customization })
                   gap: '8px'
                 }}
               >
-                {!config.hideInfoIcons && <span>🎂</span>} {personalInfo.age} ans
+                {!config.hideInfoIcons && <span style={{fontSize:'10px',fontWeight:600,color:config.leftColumnTitleColor,textTransform:'uppercase',letterSpacing:'0.05em',minWidth:'42px'}}>Âge</span>} {personalInfo.age} ans
               </div>
             )}
             {personalInfo.license && (
@@ -205,7 +205,7 @@ export const CVTemplate1: React.FC<CVTemplate1Props> = ({ data, customization })
                   gap: '8px'
                 }}
               >
-                {!config.hideInfoIcons && <span>🚗</span>} {config.reduceLicenseDisplay ? 'Permis B' : personalInfo.license}
+                {!config.hideInfoIcons && <span style={{fontSize:'10px',fontWeight:600,color:config.leftColumnTitleColor,textTransform:'uppercase',letterSpacing:'0.05em',minWidth:'42px'}}>Permis</span>} {config.reduceLicenseDisplay ? 'Permis B' : personalInfo.license}
               </div>
             )}
           </div>

@@ -152,7 +152,7 @@ export const CVTemplate2: React.FC<CVTemplate2Props> = ({ data, customization })
                 marginBottom: '8px',
                 color: config.leftColumnTextColor 
               }}>
-                {!config.hideInfoIcons && <span>📞</span>} {personalInfo.phone}
+                {!config.hideInfoIcons && <span style={{fontSize:'9px',fontWeight:700,opacity:0.7,textTransform:'uppercase',letterSpacing:'0.08em',minWidth:'38px'}}>Tél</span>} {personalInfo.phone}
               </div>
             )}
             {personalInfo.email && (
@@ -163,7 +163,7 @@ export const CVTemplate2: React.FC<CVTemplate2Props> = ({ data, customization })
                 marginBottom: '8px',
                 color: config.leftColumnTextColor 
               }}>
-                {!config.hideInfoIcons && <span>✉️</span>} {personalInfo.email}
+                {!config.hideInfoIcons && <span style={{fontSize:'9px',fontWeight:700,opacity:0.7,textTransform:'uppercase',letterSpacing:'0.08em',minWidth:'38px'}}>Email</span>} {personalInfo.email}
               </div>
             )}
             {personalInfo.address && (
@@ -174,7 +174,7 @@ export const CVTemplate2: React.FC<CVTemplate2Props> = ({ data, customization })
                 marginBottom: '8px',
                 color: config.leftColumnTextColor 
               }}>
-                {!config.hideInfoIcons && <span>📍</span>} {personalInfo.address}
+                {!config.hideInfoIcons && <span style={{fontSize:'9px',fontWeight:700,opacity:0.7,textTransform:'uppercase',letterSpacing:'0.08em',minWidth:'38px'}}>Adresse</span>} {personalInfo.address}
               </div>
             )}
             {personalInfo.age && (
@@ -185,7 +185,7 @@ export const CVTemplate2: React.FC<CVTemplate2Props> = ({ data, customization })
                 marginBottom: '8px',
                 color: config.leftColumnTextColor 
               }}>
-                {!config.hideInfoIcons && <span>🎂</span>} {personalInfo.age} ans
+                {!config.hideInfoIcons && <span style={{fontSize:'9px',fontWeight:700,opacity:0.7,textTransform:'uppercase',letterSpacing:'0.08em',minWidth:'38px'}}>Âge</span>} {personalInfo.age} ans
               </div>
             )}
             {personalInfo.license && (
@@ -196,7 +196,7 @@ export const CVTemplate2: React.FC<CVTemplate2Props> = ({ data, customization })
                 marginBottom: '8px',
                 color: config.leftColumnTextColor 
               }}>
-                {!config.hideInfoIcons && <span>🚗</span>} {config.reduceLicenseDisplay ? 'Permis B' : personalInfo.license}
+                {!config.hideInfoIcons && <span style={{fontSize:'9px',fontWeight:700,opacity:0.7,textTransform:'uppercase',letterSpacing:'0.08em',minWidth:'38px'}}>Permis</span>} {config.reduceLicenseDisplay ? 'Permis B' : personalInfo.license}
               </div>
             )}
           </div>

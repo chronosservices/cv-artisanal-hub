@@ -120,20 +120,20 @@ export const FinalStep: React.FC<FinalStepProps> = ({ data, onExportPDF }) => {
       </Card>
 
       {/* Download Section */}
-      <Card className="border-primary bg-gradient-to-r from-primary to-primary-glow text-primary-foreground">
-        <CardContent className="p-8 text-center space-y-4">
-          <h4 className="text-xl font-bold">Votre CV est prêt !</h4>
-          <p className="opacity-90">
-            Téléchargez votre CV au format PDF et commencez à postuler
+      <Card className="border-0 bg-gradient-to-br from-primary via-primary-glow to-secondary text-primary-foreground">
+        <CardContent className="p-5 sm:p-8 text-center space-y-3 sm:space-y-4">
+          <h4 className="text-lg sm:text-xl font-bold">Votre CV est prêt</h4>
+          <p className="text-sm opacity-90 max-w-sm mx-auto">
+            Cliquez pour ouvrir la boîte d'impression et enregistrer au format PDF.
           </p>
           <Button
             onClick={onExportPDF}
             size="lg"
             variant="secondary"
-            className="bg-white text-primary hover:bg-white/90 shadow-lg hover-scale"
+            className="w-full sm:w-auto bg-white text-primary hover:bg-white/95 shadow-lg h-12 px-6"
           >
-            <Download className="w-5 h-5 mr-2" />
-            Télécharger mon CV en PDF
+            <Download className="w-5 h-5 mr-2 shrink-0" />
+            <span className="whitespace-nowrap">Télécharger le PDF</span>
           </Button>
         </CardContent>
       </Card>

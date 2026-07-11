@@ -3,284 +3,237 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { CVPreview } from './CVPreview';
+import { CVPrintRoot } from './CVPrintRoot';
 import { PersonalInfoStep } from './wizard/PersonalInfoStep';
 import { FormationsStep } from './wizard/FormationsStep';
 import { ExperiencesStep } from './wizard/ExperiencesStep';
 import { SkillsStep } from './wizard/SkillsStep';
 import { FinalStep } from './wizard/FinalStep';
-import { CVData, CVCustomization } from '@/types/cv';
+import { CVData, CVCustomization, TemplateType } from '@/types/cv';
 import { exportToPDF } from '@/utils/pdfExport';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, ArrowRight, Eye, Download, ChevronLeft, Palette, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Eye, Download, Palette, LayoutGrid, Loader2, X } from 'lucide-react';
 
 interface CVWizardProps {
   data: CVData;
   onDataChange: (data: CVData) => void;
-  selectedTemplate: 1 | 2;
+  selectedTemplate: TemplateType;
   customization?: CVCustomization;
   onBackToTemplates: () => void;
   onOpenCustomizer: () => void;
 }
 
 const steps = [
-  { id: 1, title: 'Informations personnelles' },
-  { id: 2, title: 'Formations' },
-  { id: 3, title: 'Expériences' },
-  { id: 4, title: 'Compétences & Plus' },
-  { id: 5, title: 'Finalisation' }
+  { id: 1, title: 'Informations personnelles', short: 'Infos' },
+  { id: 2, title: 'Formations', short: 'Formations' },
+  { id: 3, title: 'Expériences', short: 'Expériences' },
+  { id: 4, title: 'Compétences', short: 'Compétences' },
+  { id: 5, title: 'Finalisation', short: 'Final' }
 ];
 
 export const CVWizard: React.FC<CVWizardProps> = ({
-  data,
-  onDataChange,
-  selectedTemplate,
-  customization,
-  onBackToTemplates,
-  onOpenCustomizer
+  data, onDataChange, selectedTemplate, customization, onBackToTemplates, onOpenCustomizer
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [showPreview, setShowPreview] = useState(false);
+  const [showMobilePreview, setShowMobilePreview] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const { toast } = useToast();
 
   const progress = (currentStep / steps.length) * 100;
 
-  const handleNext = () => {
-    if (currentStep < steps.length) {
-      setCurrentStep(currentStep + 1);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
   const handleExportPDF = async () => {
     setIsExporting(true);
     try {
-      const filename = `CV_${data.personalInfo.firstName || 'Mon'}_${data.personalInfo.lastName || 'CV'}`.replace(/[^a-z0-9]/gi, '_');
-      
-      // Attendre un peu pour s'assurer que le rendu est complet
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      await exportToPDF('cv-template-content', filename);
+      const filename = `CV_${(data.personalInfo.firstName || 'Mon').trim()}_${(data.personalInfo.lastName || 'CV').trim()}`
+        .replace(/[^a-z0-9_-]/gi, '_');
+      await exportToPDF('cv-print-root', filename);
       toast({
-        title: "CV exporté avec succès !",
-        description: "Votre CV a été téléchargé au format PDF.",
+        title: 'Boîte d\'impression ouverte',
+        description: 'Choisissez « Enregistrer au format PDF » pour télécharger votre CV.',
       });
     } catch (error) {
-      console.error('Erreur lors de l\'export PDF:', error);
       toast({
-        title: "Erreur d'exportation",
-        description: error instanceof Error ? error.message : "Une erreur s'est produite lors de l'export. Veuillez réessayer.",
-        variant: "destructive",
+        title: 'Erreur',
+        description: error instanceof Error ? error.message : 'Impossible d\'ouvrir la boîte d\'impression.',
+        variant: 'destructive',
       });
     } finally {
-      setIsExporting(false);
+      setTimeout(() => setIsExporting(false), 500);
     }
   };
 
   const renderStepContent = () => {
     switch (currentStep) {
-      case 1:
-        return <PersonalInfoStep data={data} onDataChange={onDataChange} />;
-      case 2:
-        return <FormationsStep data={data} onDataChange={onDataChange} />;
-      case 3:
-        return <ExperiencesStep data={data} onDataChange={onDataChange} />;
-      case 4:
-        return <SkillsStep data={data} onDataChange={onDataChange} />;
-      case 5:
-        return <FinalStep data={data} onDataChange={onDataChange} onExportPDF={handleExportPDF} />;
-      default:
-        return null;
+      case 1: return <PersonalInfoStep data={data} onDataChange={onDataChange} />;
+      case 2: return <FormationsStep data={data} onDataChange={onDataChange} />;
+      case 3: return <ExperiencesStep data={data} onDataChange={onDataChange} />;
+      case 4: return <SkillsStep data={data} onDataChange={onDataChange} />;
+      case 5: return <FinalStep data={data} onDataChange={onDataChange} onExportPDF={handleExportPDF} />;
+      default: return null;
     }
   };
 
-  if (showPreview) {
-    return (
-      <div className="min-h-screen bg-background p-3 sm:p-6">
-        {/* Header mobile responsif */}
-        <div className="mb-6 p-4 bg-card rounded-lg border shadow-sm">
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+  return (
+    <>
+      {/* Hidden print portal — always mounted so window.print() works instantly */}
+      <CVPrintRoot data={data} selectedTemplate={selectedTemplate} customization={customization} />
+
+      <div className="space-y-4 sm:space-y-6 no-print">
+        {/* TOP BAR — responsive action buttons */}
+        <div className="sticky top-0 z-30 -mx-4 sm:mx-0 bg-background/80 backdrop-blur-md border-b sm:border-0 sm:rounded-xl sm:bg-card sm:shadow-sm">
+          <div className="px-4 sm:px-4 py-3 flex flex-wrap items-center gap-2">
             <Button
-              variant="outline"
-              onClick={() => setShowPreview(false)}
-              className="flex items-center justify-center gap-2 text-sm py-3 px-4 min-h-[44px] flex-1 sm:flex-none border-primary/20 hover:border-primary hover:bg-primary/5 transition-all"
-              disabled={isExporting}
+              variant="outline" size="sm"
+              onClick={onBackToTemplates}
+              className="h-9 px-3 text-xs sm:text-sm"
             >
-              <ChevronLeft className="w-4 h-4" />
-              Retour au formulaire
+              <LayoutGrid className="w-4 h-4 sm:mr-1.5" />
+              <span className="hidden sm:inline">Modèles</span>
             </Button>
             <Button
+              variant="outline" size="sm"
+              onClick={onOpenCustomizer}
+              className="h-9 px-3 text-xs sm:text-sm border-secondary/40 text-secondary hover:bg-secondary/10"
+            >
+              <Palette className="w-4 h-4 sm:mr-1.5" />
+              <span className="hidden sm:inline">Personnaliser</span>
+            </Button>
+            <div className="flex-1" />
+            <Button
+              variant="outline" size="sm"
+              onClick={() => setShowMobilePreview(true)}
+              className="h-9 px-3 text-xs sm:text-sm xl:hidden border-primary/40 text-primary hover:bg-primary/10"
+            >
+              <Eye className="w-4 h-4 sm:mr-1.5" />
+              <span className="hidden sm:inline">Aperçu</span>
+            </Button>
+            <Button
+              size="sm"
               onClick={handleExportPDF}
               disabled={isExporting}
-              className="flex items-center justify-center gap-2 text-sm py-3 px-4 min-h-[44px] flex-1 sm:flex-none bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 transition-all"
+              className="h-9 px-3 text-xs sm:text-sm bg-gradient-to-r from-primary to-primary-glow shadow-md hover:shadow-lg"
             >
-              {isExporting ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span className="truncate">Génération PDF...</span>
-                </>
-              ) : (
-                <>
-                  <Download className="w-4 h-4" />
-                  <span className="truncate">Télécharger PDF</span>
-                </>
-              )}
+              {isExporting ? <Loader2 className="w-4 h-4 sm:mr-1.5 animate-spin" /> : <Download className="w-4 h-4 sm:mr-1.5" />}
+              <span className="hidden sm:inline">PDF</span>
             </Button>
           </div>
         </div>
-        
-        {/* CV Preview avec meilleure responsivité */}
-        <div className="w-full overflow-hidden">
-          <CVPreview data={data} selectedTemplate={selectedTemplate} customization={customization} />
-        </div>
-      </div>
-    );
-  }
 
-  return (
-    <div className="space-y-6">
-      {/* Header with progress */}
-      <Card className="shadow-lg border-0 bg-gradient-to-br from-card via-card to-muted/20 animate-fade-in">
-        <CardHeader className="pb-4">
-          {/* Header mobile-first responsive */}
-          <div className="space-y-3">
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-              <Button
-                variant="outline"
-                onClick={onBackToTemplates}
-                className="flex items-center justify-center gap-2 text-xs sm:text-sm h-8 sm:h-10 flex-1 sm:flex-none"
-              >
-                <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
-                Modèle
-              </Button>
-              <div className="flex gap-2 flex-1 sm:flex-none">
-                <Button
-                  variant="outline"
-                  onClick={onOpenCustomizer}
-                  className="flex items-center justify-center gap-2 text-xs sm:text-sm h-8 sm:h-10 flex-1 border-secondary/50 text-secondary hover:bg-secondary/5"
-                >
-                  <Palette className="w-3 h-3 sm:w-4 sm:h-4" />
-                  Style
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowPreview(true)}
-                  className="flex items-center justify-center gap-2 text-xs sm:text-sm h-8 sm:h-10 flex-1 border-primary/50 text-primary hover:bg-primary/5 md:hidden"
-                >
-                  <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
-                  Aperçu
-                </Button>
+        {/* PROGRESS HEADER */}
+        <Card className="shadow-sm border-0 bg-card">
+          <CardHeader className="pb-4">
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center justify-between gap-3">
+                <CardTitle className="text-base sm:text-xl font-bold text-primary truncate">
+                  {steps[currentStep - 1].title}
+                </CardTitle>
+                <span className="shrink-0 text-xs sm:text-sm text-muted-foreground font-medium">
+                  {currentStep} / {steps.length}
+                </span>
+              </div>
+              <Progress value={progress} className="h-2" />
+              {/* Step dots — visible on tablet+ */}
+              <div className="hidden sm:flex items-center gap-1.5">
+                {steps.map((step, i) => (
+                  <React.Fragment key={step.id}>
+                    <button
+                      onClick={() => setCurrentStep(step.id)}
+                      className={`shrink-0 w-7 h-7 rounded-full text-xs font-semibold transition-all ${
+                        step.id <= currentStep
+                          ? 'bg-primary text-primary-foreground shadow-md'
+                          : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                      }`}
+                    >
+                      {step.id}
+                    </button>
+                    {i < steps.length - 1 && (
+                      <div className={`flex-1 h-0.5 rounded ${step.id < currentStep ? 'bg-primary' : 'bg-muted'}`} />
+                    )}
+                  </React.Fragment>
+                ))}
               </div>
             </div>
-          </div>
-          
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-2xl font-bold text-primary">
-                {steps[currentStep - 1].title}
-              </CardTitle>
-              <span className="text-sm text-muted-foreground">
-                Étape {currentStep} sur {steps.length}
-              </span>
-            </div>
-            
-            <Progress value={progress} className="h-3" />
-            
-            {/* Steps indicator */}
-            <div className="flex items-center justify-between">
-              {steps.map((step, index) => (
-                <div
-                  key={step.id}
-                  className={`flex items-center ${index < steps.length - 1 ? 'flex-1' : ''}`}
-                >
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300 ${
-                      step.id <= currentStep
-                        ? 'bg-primary text-primary-foreground shadow-lg'
-                        : 'bg-muted text-muted-foreground'
-                    }`}
-                  >
-                    {step.id}
-                  </div>
-                  {index < steps.length - 1 && (
-                    <div
-                      className={`flex-1 h-1 mx-2 rounded transition-all duration-300 ${
-                        step.id < currentStep ? 'bg-primary' : 'bg-muted'
-                      }`}
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </CardHeader>
-      </Card>
+          </CardHeader>
+        </Card>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
-        {/* Form Content */}
-        <div className="xl:col-span-2">
-          <Card className="shadow-lg border-0 bg-gradient-to-br from-card via-card to-muted/20 animate-scale-in">
-            <CardContent className="p-3 sm:p-6">
-              {renderStepContent()}
-            </CardContent>
-          </Card>
+        {/* CONTENT + DESKTOP PREVIEW */}
+        <div className="grid grid-cols-1 xl:grid-cols-5 gap-4 sm:gap-6">
+          <div className="xl:col-span-3 space-y-4">
+            <Card className="shadow-sm border-0">
+              <CardContent className="p-4 sm:p-6">
+                {renderStepContent()}
+              </CardContent>
+            </Card>
 
-          {/* Navigation responsive */}
-          <div className="mt-6 p-3 bg-muted/30 rounded-lg">
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            {/* NAVIGATION */}
+            <div className="grid grid-cols-2 gap-2 sm:gap-3">
               <Button
                 variant="outline"
-                onClick={handlePrevious}
+                onClick={() => currentStep > 1 && setCurrentStep(currentStep - 1)}
                 disabled={currentStep === 1}
-                className="flex items-center justify-center gap-2 text-xs sm:text-sm h-8 sm:h-10 flex-1 sm:flex-none"
+                className="h-11 text-sm"
               >
-                <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" />
+                <ArrowLeft className="w-4 h-4 mr-1.5" />
                 Précédent
               </Button>
-
-              <Button
-                variant="outline"
-                onClick={() => setShowPreview(true)}
-                className="flex items-center justify-center gap-2 text-xs sm:text-sm h-8 sm:h-10 flex-1 border-primary/50 text-primary hover:bg-primary/5 md:hidden"
-              >
-                <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
-                Aperçu
-              </Button>
-
               {currentStep === steps.length ? (
                 <Button
                   onClick={handleExportPDF}
                   disabled={isExporting}
-                  className="flex items-center justify-center gap-2 text-xs sm:text-sm h-8 sm:h-10 flex-1 sm:flex-none bg-gradient-to-r from-secondary to-accent"
+                  className="h-11 text-sm bg-gradient-to-r from-primary to-primary-glow"
                 >
-                  <Download className="w-3 h-3 sm:w-4 sm:h-4" />
-                  {isExporting ? 'Export...' : 'PDF'}
+                  {isExporting ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Download className="w-4 h-4 mr-1.5" />}
+                  Télécharger
                 </Button>
               ) : (
                 <Button
-                  onClick={handleNext}
-                  className="flex items-center justify-center gap-2 text-xs sm:text-sm h-8 sm:h-10 flex-1 sm:flex-none bg-gradient-to-r from-primary to-primary-glow"
+                  onClick={() => currentStep < steps.length && setCurrentStep(currentStep + 1)}
+                  className="h-11 text-sm bg-gradient-to-r from-primary to-primary-glow"
                 >
                   Suivant
-                  <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <ArrowRight className="w-4 h-4 ml-1.5" />
                 </Button>
               )}
             </div>
           </div>
-        </div>
 
-        {/* Preview Section - Desktop only */}
-        <div className="hidden md:block">
-          <div className="sticky top-6">
-            <CVPreview data={data} selectedTemplate={selectedTemplate} customization={customization} />
+          <div className="hidden xl:block xl:col-span-2">
+            <div className="sticky top-24">
+              <CVPreview data={data} selectedTemplate={selectedTemplate} customization={customization} />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {/* MOBILE PREVIEW OVERLAY */}
+      {showMobilePreview && (
+        <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm no-print flex flex-col">
+          <div className="flex items-center justify-between px-4 py-3 border-b bg-card">
+            <h2 className="text-base font-semibold">Aperçu du CV</h2>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                onClick={handleExportPDF}
+                disabled={isExporting}
+                className="h-9 px-3 bg-gradient-to-r from-primary to-primary-glow"
+              >
+                {isExporting ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Download className="w-4 h-4 mr-1.5" />}
+                PDF
+              </Button>
+              <Button
+                variant="outline" size="sm"
+                onClick={() => setShowMobilePreview(false)}
+                className="h-9 w-9 p-0"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+          <div className="flex-1 overflow-auto p-3">
+            <CVPreview data={data} selectedTemplate={selectedTemplate} customization={customization} />
+          </div>
+        </div>
+      )}
+    </>
   );
 };

@@ -32,7 +32,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onData
     if (file) {
       if (file.size > 5 * 1024 * 1024) { // 5MB limit
         toast({
-          title: "❌ Fichier trop volumineux",
+          title: "Fichier trop volumineux",
           description: "La taille de l'image ne doit pas dépasser 5MB.",
           variant: "destructive",
         });
@@ -41,7 +41,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onData
 
       if (!file.type.startsWith('image/')) {
         toast({
-          title: "❌ Format non supporté",
+          title: "Format non supporté",
           description: "Veuillez sélectionner une image (JPG, PNG, etc.).",
           variant: "destructive",
         });
@@ -52,7 +52,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onData
       reader.onload = (e) => {
         updatePersonalInfo('photo', e.target?.result as string);
         toast({
-          title: "✅ Photo ajoutée !",
+          title: "Photo ajoutée",
           description: "Votre photo de profil a été ajoutée avec succès.",
         });
       };
@@ -165,7 +165,7 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ data, onData
           className="transition-all duration-300 focus:shadow-md focus:border-primary/50"
         />
         <p className="text-xs text-muted-foreground">
-          💡 Tip: Utilisez un titre qui correspond au poste que vous visez
+          Astuce : utilisez un titre qui correspond au poste que vous visez
         </p>
       </div>
 
