@@ -88,4 +88,4 @@ export interface CVCustomization {
   dateFormat: string;
 }
 
-export type TemplateType = 1 | 2;
+export type TemplateType = 1 | 2 | 3;
