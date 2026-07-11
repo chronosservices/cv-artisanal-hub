@@ -199,3 +199,52 @@ All colors MUST be HSL.
     transform: translateY(-5px);
   }
 }
+/* ========================================
+   PRINT LAYER - WYSIWYG PDF EXPORT
+   Uses window.print() with @media print for pixel-perfect A4 output.
+   ======================================== */
+
+#cv-print-root {
+  position: absolute;
+  left: -99999px;
+  top: 0;
+  width: 210mm;
+  background: white;
+  z-index: -1;
+  pointer-events: none;
+}
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  body > #root { display: none !important; }
+  #cv-print-root {
+    position: static !important;
+    left: 0 !important;
+    z-index: auto !important;
+    pointer-events: auto !important;
+    display: block !important;
+    width: 210mm !important;
+    margin: 0 auto !important;
+  }
+  #cv-print-root * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  #cv-print-root section, #cv-print-root article {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .no-print { display: none !important; }
+}
