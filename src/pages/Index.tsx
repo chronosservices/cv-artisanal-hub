@@ -5,7 +5,7 @@ import { useCVData } from '@/hooks/useCVData';
 import { useCVCustomization } from '@/hooks/useCVCustomization';
 import { CVCustomizer } from '@/components/cv/CVCustomizer';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { FileText } from 'lucide-react';
+import { FileText, LayoutGrid, ClipboardEdit, Download } from 'lucide-react';
 
 const Index = () => {
   const { data, setData, selectedTemplate, setSelectedTemplate, loadExampleData } = useCVData();
@@ -43,6 +43,31 @@ const Index = () => {
       </header>
 
       <main className="container mx-auto px-4 py-6 sm:py-8 max-w-7xl">
+        {view === 'templates' && (
+          <div className="mb-6 sm:mb-8 rounded-2xl border bg-card/60 backdrop-blur-sm shadow-sm p-4 sm:p-5 no-print">
+            <p className="text-xs sm:text-sm font-semibold text-primary mb-3 uppercase tracking-wider">
+              En 3 étapes, créez votre CV en ligne
+            </p>
+            <ol className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+              {[
+                { n: 1, label: 'Choisissez votre modèle', icon: LayoutGrid },
+                { n: 2, label: 'Remplissez les rubriques', icon: ClipboardEdit },
+                { n: 3, label: 'Téléchargez !', icon: Download },
+              ].map(({ n, label, icon: Icon }) => (
+                <li key={n} className="flex items-center gap-3">
+                  <span className="shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold shadow-sm">
+                    {n}
+                  </span>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Icon className="w-4 h-4 text-secondary shrink-0" />
+                    <span className="text-sm text-foreground truncate">{label}</span>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
+
         {view === 'templates' && (
           <TemplateSelector
             onTemplateSelect={handleTemplateSelect}
