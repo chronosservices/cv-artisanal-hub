@@ -3,11 +3,13 @@ import { createPortal } from 'react-dom';
 import { CVTemplate1 } from './CVTemplate1';
 import { CVTemplate2 } from './CVTemplate2';
 import { CVTemplate3 } from './CVTemplate3';
-import { CVData, CVCustomization } from '@/types/cv';
+import { CVTemplate4 } from './CVTemplate4';
+import { CVTemplate5 } from './CVTemplate5';
+import { CVData, CVCustomization, TemplateType } from '@/types/cv';
 
 interface CVPrintRootProps {
   data: CVData;
-  selectedTemplate: 1 | 2 | 3;
+  selectedTemplate: TemplateType;
   customization?: CVCustomization;
 }
 
@@ -36,6 +38,8 @@ export const CVPrintRoot: React.FC<CVPrintRootProps> = ({ data, selectedTemplate
       {selectedTemplate === 1 && <CVTemplate1 data={data} customization={customization} />}
       {selectedTemplate === 2 && <CVTemplate2 data={data} customization={customization} />}
       {selectedTemplate === 3 && <CVTemplate3 data={data} customization={customization} />}
+      {selectedTemplate === 4 && <CVTemplate4 data={data} customization={customization} />}
+      {selectedTemplate === 5 && <CVTemplate5 data={data} customization={customization} />}
     </div>,
     mountNode
   );
