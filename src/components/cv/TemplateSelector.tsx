@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { CVTemplate1 } from './CVTemplate1';
 import { CVTemplate2 } from './CVTemplate2';
 import { CVTemplate3 } from './CVTemplate3';
+import { CVTemplate4 } from './CVTemplate4';
+import { CVTemplate5 } from './CVTemplate5';
 import { ArrowRight, Sparkles, Check } from 'lucide-react';
 import { CVData } from '@/types/cv';
 
@@ -61,6 +63,18 @@ const templates = [
     description: 'Éditorial une colonne, typographie soignée, barres de compétences. Look startup.',
     accent: '#FF5700',
   },
+  {
+    id: 4,
+    name: 'Élégant Doré',
+    description: 'Bandeau sombre, accent doré, deux colonnes. Un CV premium pour cadres et dirigeants.',
+    accent: '#c9a24a',
+  },
+  {
+    id: 5,
+    name: 'Classique Éditorial',
+    description: 'Typographie serif intemporelle, filets fins, mise en page centrée. Sobre et raffiné.',
+    accent: '#111111',
+  },
 ];
 
 const TemplateCard: React.FC<{
@@ -91,6 +105,8 @@ const TemplateCard: React.FC<{
         {id === 1 && <CVTemplate1 data={previewData} />}
         {id === 2 && <CVTemplate2 data={previewData} />}
         {id === 3 && <CVTemplate3 data={previewData} />}
+      {id === 4 && <CVTemplate4 data={previewData} />}
+      {id === 5 && <CVTemplate5 data={previewData} />}
       </div>
     </div>
     <CardContent className="p-4 space-y-2 border-t bg-card">
@@ -121,7 +137,7 @@ export const TemplateSelector: React.FC<TemplateSelectorProps> = ({
           Choisissez votre modèle
         </h1>
         <p className="text-sm sm:text-base text-muted-foreground">
-          3 modèles professionnels au format A4. Personnalisables, imprimables, prêts à envoyer.
+          5 modèles professionnels au format A4. Personnalisables, imprimables, prêts à envoyer.
         </p>
         <Button
           onClick={onLoadExample}

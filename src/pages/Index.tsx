@@ -13,7 +13,7 @@ const Index = () => {
   const [view, setView] = useState<'templates' | 'wizard' | 'customizer'>('templates');
 
   const handleTemplateSelect = (template: number) => {
-    setSelectedTemplate(template as 1 | 2 | 3);
+    setSelectedTemplate(template as 1 | 2 | 3 | 4 | 5);
     setView('wizard');
   };
 
