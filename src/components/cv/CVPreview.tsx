@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CVTemplate1 } from './CVTemplate1';
 import { CVTemplate2 } from './CVTemplate2';
 import { CVTemplate3 } from './CVTemplate3';
+import { CVTemplate4 } from './CVTemplate4';
+import { CVTemplate5 } from './CVTemplate5';
 import { CVData, TemplateType, CVCustomization } from '@/types/cv';
 import { Eye } from 'lucide-react';
 
@@ -61,6 +63,8 @@ export const CVPreview: React.FC<CVPreviewProps> = ({ data, selectedTemplate, cu
             {selectedTemplate === 1 && <CVTemplate1 data={data} customization={customization} />}
             {selectedTemplate === 2 && <CVTemplate2 data={data} customization={customization} />}
             {selectedTemplate === 3 && <CVTemplate3 data={data} customization={customization} />}
+            {selectedTemplate === 4 && <CVTemplate4 data={data} customization={customization} />}
+            {selectedTemplate === 5 && <CVTemplate5 data={data} customization={customization} />}
           </div>
         </div>
       </CardContent>
